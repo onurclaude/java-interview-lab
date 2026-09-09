@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: java-interview-lab
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/interviewlab
+    username: interviewlab
+    password: interviewlab
+    hikari:
+      # Deliberately small pool: several labs (pessimistic locking, deadlock,
+      # propagation) hold a connection for the whole transaction on purpose,
+      # and a small pool makes "this thread is now blocked waiting on a
+      # connection/lock" visible quickly instead of hiding it behind 10 spare
+      # connections. See docs/pessimistic-locking.md.
+      maximum-pool-size: 8
+
+  jpa:
+    hibernate:
+      # 'update' is a deliberate simplification: this project's point is to
+      # demonstrate Java/Spring *runtime behavior* (locking, transactions,
+      # concurrency), not schema-migration tooling. A real production
+      # service would use Flyway/Liquibase with ddl-auto=validate instead -
+      # that's a separate topic from what this lab teaches.
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+        jdbc:
+          time_zone: UTC
+
+server:
+  port: 8080
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    root: INFO
+    com.interviewlab: DEBUG
+    # Hibernate SQL + bind parameter logging is opt-in per lab via the
+    # dedicated application-*.yml profiles / test classes, because with
+    # 30+ labs sharing one datasource, leaving it globally on would flood
+    # every unrelated test's console. Turn it on locally with:
+    #   logging.level.org.hibernate.SQL=DEBUG
+    #   logging.level.org.hibernate.orm.jdbc.bind=TRACE
+    org.hibernate.SQL: INFO
