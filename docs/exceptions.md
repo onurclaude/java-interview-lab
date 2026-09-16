@@ -1,6 +1,15 @@
 # Exception Hiyerarşisi, @RestControllerAdvice ve Rollback Kuralları
 
-Kod: `com.interviewlab.exception.*` — Testler: `ExceptionHierarchyTest`
+Kod: `com.interviewlab.exception.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/exceptions/reset
+POST /api/labs/exceptions/swallowed
+POST /api/labs/exceptions/lossy-rethrow
+POST /api/labs/exceptions/good
+```
+`ExceptionHierarchyTest`, AYNI davranışın otomatik regresyon kanıtıdır — ikincildir, birincil değil.
 
 ## Hiyerarşi
 

@@ -1,8 +1,23 @@
 # Java Concurrency Temelleri: Thread'ler, Race Condition'lar, Lock'lar, volatile, ThreadLocal ve Patolojiler
 
-Kod: `com.interviewlab.concurrency.*` — Testler: `ThreadLifecycleTest`, `ThreadCreationBoundsTest`,
-`RaceConditionTest`, `SynchronizationTest`, `VolatileAndAtomicTest`, `ThreadLocalTest`,
-`DeadlockLivelockStarvationTest`
+Kod: `com.interviewlab.concurrency.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/concurrency/counter/{reset,bad,good}
+POST /api/labs/concurrency/synchronized/{bad,good}
+POST /api/labs/concurrency/reentrant-lock/{bad,good}
+POST /api/labs/concurrency/read-write-lock/demo
+POST /api/labs/concurrency/stamped-lock/demo
+POST /api/labs/concurrency/volatile/{misconception-check,correct-usage}
+POST /api/labs/threadlocal/{reset,bad,good}
+```
+Thread yaşam döngüsü için Kategori B runner'ı `com.interviewlab.labrunner.ThreadLifecycleLabRunner`
+(IntelliJ'de doğrudan Run/Debug — bkz. `docs/DEBUGGER_LABS.md` #23). Tam breakpoint sırası ve
+beklenen değişkenler için `docs/DEBUGGER_LABS.md`'nin ilgili bölümlerine bakın.
+`ThreadLifecycleTest`, `ThreadCreationBoundsTest`, `RaceConditionTest`, `SynchronizationTest`,
+`VolatileAndAtomicTest`, `ThreadLocalTest`, `DeadlockLivelockStarvationTest` — AYNI davranışın
+otomatik regresyon kanıtıdır — ikincildir, birincil değil.
 
 ## Thread yaşam döngüsü
 

@@ -1,6 +1,20 @@
 # ExecutorService ve Production ThreadPoolExecutor Ayarları
 
-Kod: `com.interviewlab.executor.*` — Testler: `ExecutorServiceTest`
+Kod: `com.interviewlab.executor.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/executor/reset
+POST /api/labs/executor/bad
+POST /api/labs/executor/good
+POST /api/labs/executor/discard
+POST /api/labs/executor/discard-oldest
+POST /api/labs/executor/caller-runs
+```
+Response'lar artık corePoolSize/maximumPoolSize/queueCapacity/poolSize/activeCount/queueSize'ı
+HER ZAMAN gösterir; discard/discard-oldest, GERÇEK gözlemlenebilir `executedTaskIds` ile hangi
+görevin sessizce atıldığını kanıtlar. `ExecutorServiceTest`, AYNI davranışın otomatik regresyon
+kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

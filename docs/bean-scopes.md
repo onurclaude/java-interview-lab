@@ -1,6 +1,22 @@
 # Spring Bean Scope'ları
 
-Kod: `com.interviewlab.scopes.*` — Testler: `BeanScopesTest`
+Kod: `com.interviewlab.scopes.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/scopes/reset
+POST /api/labs/scopes/singleton/bad
+POST /api/labs/scopes/singleton/good
+POST /api/labs/scopes/prototype/bad
+POST /api/labs/scopes/prototype/good
+GET  /api/labs/scopes/lifecycle
+GET  /lab/scopes/request
+GET  /lab/scopes/session
+GET  /lab/scopes/application
+```
+Session scope için Postman Cookie Jar talimatı: "11 Bean Scopes & Lifecycle" klasörünün 00
+INFO isteğine bakın. `BeanScopesTest`, AYNI davranışın otomatik regresyon kanıtıdır —
+ikincildir, birincil değil.
 
 ## Singleton ≠ GoF Singleton
 

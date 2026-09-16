@@ -7,7 +7,9 @@ services:
       POSTGRES_USER: interviewlab
       POSTGRES_PASSWORD: interviewlab
     ports:
-      - "5433:5432"
+      # 5434 - 5432/5433, bu makinedeki diğer projelerin (port-ofis, cafe-menu-db) zaten
+      # kullandığı portlar olduğu için bilinçli olarak seçildi. Bkz. README.md.
+      - "5434:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U interviewlab -d interviewlab"]
       interval: 5s

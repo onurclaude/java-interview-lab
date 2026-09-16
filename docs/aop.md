@@ -1,6 +1,17 @@
 # Spring AOP: Özel Annotation + @Around
 
-Kod: `com.interviewlab.aop.*` — Testler: `AopSelfInvocationTest`
+Kod: `com.interviewlab.aop.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/aop/reset
+POST /api/labs/aop/self-invocation/bad
+GET  /api/labs/aop/self-invocation/good
+GET  /api/labs/aop/proxy-info
+```
+Tam breakpoint sırası ve beklenen call stack için **`docs/DEBUGGER_LABS.md`** "AOP SELF
+INVOCATION" bölümüne bakın. `AopSelfInvocationTest`, AYNI davranışın otomatik regresyon
+kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

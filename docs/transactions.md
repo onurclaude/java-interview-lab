@@ -1,7 +1,17 @@
 # Transaction Rollback ve Proxy / Self-Invocation Problemi
 
 Kod: `com.interviewlab.transaction.rollback.*`, `com.interviewlab.transaction.propagation.*`
-Testler: `RollbackBehaviorTest`, `PropagationSelfInvocationTest`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger + DBeaver:**
+```http
+POST /api/labs/transaction/reset
+POST /api/labs/transaction/bad
+POST /api/labs/transaction/good
+POST /api/labs/propagation/requires-new/bad
+POST /api/labs/propagation/requires-new/good
+```
+`RollbackBehaviorTest`, `PropagationSelfInvocationTest` — AYNI davranışın otomatik regresyon
+kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

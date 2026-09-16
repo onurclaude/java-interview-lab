@@ -10,6 +10,9 @@ The goal: after going through this repo, "optimistic locking nedir?" gets an ans
 `UPDATE ... WHERE version=?` matched zero rows and Hibernate threw
 `ObjectOptimisticLockingFailureException`"* — not a textbook definition.
 
+**Nereden başlamalıyım?** → **[docs/START_HERE.md](docs/START_HERE.md)**. İlerleme durumu
+için [PROJECT_STATUS.md](PROJECT_STATUS.md) ve [docs/TOPIC_MATRIX.md](docs/TOPIC_MATRIX.md)'e bakın.
+
 ## Tech stack
 
 Java 21 · Spring Boot 3.3 · Maven + Maven Wrapper · Spring Data JPA / Hibernate · PostgreSQL
@@ -22,12 +25,75 @@ everywhere except the one documented, justified exception (`EntityManager` field
 ```bash
 docker compose up -d       # starts PostgreSQL for `./mvnw spring-boot:run`
 ./mvnw clean test          # runs the whole suite (Testcontainers starts its own Postgres)
-./mvnw spring-boot:run     # starts the app on :8080 for the Demo API (see below)
+./mvnw spring-boot:run     # starts the app on :8080 for the interactive labs (see below)
 ```
 
-Tests do **not** need `docker compose up` — they start their own Testcontainers PostgreSQL
-(reused across test classes if `~/.testcontainers.properties` has
-`testcontainers.reuse.enable=true`).
+Tests do **not** need `docker compose up` — they start their own Testcontainers PostgreSQL.
+Schema is managed by **Flyway** (`src/main/resources/db/migration`), not
+`ddl-auto=update` — both the dev database (`docker compose`) and the test database
+(Testcontainers) run the same migrations, so they always share one real schema.
+
+## Interactive Lab Modu (IntelliJ + Postman + DBeaver)
+
+Bu proje sadece okunacak/otomatik test edilecek bir kod arşivi değil - `/api/labs/*` altında,
+her konuyu kendi Postman/DBeaver'ından bizzat tetikleyip gözlemleyebileceğin **çalıştırılabilir**
+bir laboratuvar. Tam adım-adım rehber için [docs/INTERACTIVE_LABS.md](docs/INTERACTIVE_LABS.md)'e bakın; aşağıdaki hızlı başlangıç.
+
+**1. Docker Postgres'i ayağa kaldır**
+
+```bash
+docker compose up -d
+docker compose ps        # postgres servisi "healthy" olmalı
+```
+
+| | |
+|---|---|
+| Host | `localhost` |
+| Port | `5434` *(bilinçli olarak `5432`/`5433` değil — bkz. aşağıdaki not)* |
+| Database | `interviewlab` |
+| Username | `interviewlab` |
+| Password | `interviewlab` |
+| JDBC URL | `jdbc:postgresql://localhost:5434/interviewlab` |
+
+> **Neden 5432/5433 değil 5434?** Bu makinede zaten çalışan başka projeler var:
+> `port-ofis` 5432'yi, `cafe-menu-db` 5433'ü kullanıyor. Bu projenin kendi Postgres'i
+> onlarla ASLA çakışmasın diye 5434'e taşındı - `docker compose port list` ile kendi
+> makinende hangi portların dolu olduğunu görüp gerekirse `docker-compose.yml` ve
+> `src/main/resources/application.yml`'deki portu değiştirebilirsin.
+
+**DBeaver bağlantısı:** yukarıdaki host/port/database/username/password ile yeni bir
+PostgreSQL bağlantısı oluştur. Örnek sorgu: `SELECT * FROM lab_customer;`
+
+**2. Spring Boot'u IntelliJ'den çalıştır**
+
+`InterviewLabApplication.java` dosyasını aç → Run. Konsolda `Started InterviewLabApplication`
+görene kadar bekle. (Flyway migration'ları burada, açılışta otomatik çalışır - elle SQL
+çalıştırman gerekmez.) Uygulama **`:8082`** portunda başlar (`:8080`, bu makinede
+`port-ofis-backend` tarafından zaten kullanıldığı için bilinçli olarak farklı seçildi).
+
+**3. Postman collection'ı import et**
+
+`postman/Java-Interview-Lab.postman_collection.json` ve
+`postman/Java-Interview-Lab-Local.postman_environment.json` dosyalarını Postman'e import et,
+environment'ı seç (`baseUrl = http://localhost:8082`).
+
+**4. Bir lab'i çalıştır**
+
+Her lab aynı sözleşmeye sahiptir: `RESET → BAD → STATE → GOOD`. Örneğin Optimistic Locking:
+
+```http
+POST /api/labs/optimistic/reset
+POST /api/labs/optimistic/bad      # gerçek bir lost update'i tetikler ve kanıtlar
+GET  /api/labs/optimistic/state    # DB'deki güncel durumu döner
+POST /api/labs/optimistic/good     # ObjectOptimisticLockingFailureException'ı tetikler ve kanıtlar
+```
+
+Yanıtlar öğretici JSON'dur (`problem`/`lesson`/`nextStep` alanları dahil), ve her çağrı
+konsola okunabilir bir `LAB: ... — BAD/GOOD` bloğu basar. `GET /api/labs` tüm çalıştırılabilir
+lab'ları listeler.
+
+Çalıştırılabilir lab'ların tam listesi ve mevcut kapsamı için
+[PROJECT_STATUS.md](PROJECT_STATUS.md) ve [docs/TOPIC_MATRIX.md](docs/TOPIC_MATRIX.md)'e bakın.
 
 ## Topic map
 

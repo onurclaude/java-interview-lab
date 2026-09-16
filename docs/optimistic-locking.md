@@ -1,6 +1,14 @@
 # Optimistic Locking
 
-Kod: `com.interviewlab.locking.optimistic.*` — Testler: `OptimisticLockingTest`
+Kod: `com.interviewlab.locking.optimistic.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger + DBeaver:**
+```http
+POST /api/labs/optimistic/reset
+POST /api/labs/optimistic/bad
+POST /api/labs/optimistic/good
+```
+`OptimisticLockingTest`, AYNI davranışın otomatik regresyon kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

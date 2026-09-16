@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Aşağıdaki metot çiftlerinin her biri bilinçli olarak tekrarlanmıştır (her izolasyon
@@ -63,9 +65,22 @@ public class IsolationAnomalyLab {
     public void updateBalanceAfterSignal(long accountId, int newBalance, CountDownLatch waitForReaderSignal, CountDownLatch doneSignal) {
         awaitLatch(waitForReaderSignal);
         jdbcTemplate.update(UPDATE_BALANCE, newBalance, accountId);
-        log.info("T2 committed balance={}", newBalance);
-        doneSignal.countDown();
-        // bu metot geri döndüğünde commit edilir
+        log.info("T2 update çalıştı balance={} (henüz commit değil)", newBalance);
+        // doneSignal'ı burada, metot dönmeden HEMEN ÖNCE countDown etmek yanıltıcı olurdu:
+        // @Transactional'ın gerçek COMMIT'i, bu metot çağırana döndükten SONRA gerçekleşir.
+        // afterCommit() kaydı, T1'in ikinci okumasının GERÇEK commit'ten önce serbest
+        // kalmamasını garanti eder - aksi halde T1 hâlâ commit edilmemiş bir transaction'la
+        // yarışabilir ve (READ_COMMITTED altında bile) bayat veri görebilir; bu, sıkı
+        // zamanlamalı bir JUnit thread havuzunda genelde fark edilmez ama Tomcat worker
+        // thread'leri + taze oluşturulmuş bir executor gibi farklı zamanlama koşullarında
+        // güvenilir şekilde yanlış sonuç üretebilir.
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                log.info("T2 gerçekten commit oldu balance={}", newBalance);
+                doneSignal.countDown();
+            }
+        });
     }
 
     // ---------- Hayalet okuma (Phantom read) ----------
@@ -92,7 +107,14 @@ public class IsolationAnomalyLab {
     public void insertRowAfterSignal(long newId, int balance, CountDownLatch waitForReaderSignal, CountDownLatch doneSignal) {
         awaitLatch(waitForReaderSignal);
         jdbcTemplate.update("insert into lab_isolation_account(id, balance) values (?, ?)", newId, balance);
-        doneSignal.countDown();
+        // bkz. updateBalanceAfterSignal'daki not: doneSignal, gerçek COMMIT'ten SONRA
+        // countDown edilmeli, metot dönmeden hemen önce değil.
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                doneSignal.countDown();
+            }
+        });
     }
 
     // ---------- Kirli okuma (Dirty read) (Postgres, READ_UNCOMMITTED'ı READ_COMMITTED'a yükseltir) ----------

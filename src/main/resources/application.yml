@@ -3,7 +3,7 @@ spring:
     name: java-interview-lab
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/interviewlab
+    url: jdbc:postgresql://localhost:5434/interviewlab
     username: interviewlab
     password: interviewlab
     hikari:
@@ -16,12 +16,12 @@ spring:
 
   jpa:
     hibernate:
-      # 'update' is a deliberate simplification: this project's point is to
-      # demonstrate Java/Spring *runtime behavior* (locking, transactions,
-      # concurrency), not schema-migration tooling. A real production
-      # service would use Flyway/Liquibase with ddl-auto=validate instead -
-      # that's a separate topic from what this lab teaches.
-      ddl-auto: update
+      # Şema artık Flyway migration'ları (src/main/resources/db/migration) tarafından
+      # yönetiliyor - Hibernate açılışta şemayı DEĞİŞTİRMEZ, sadece entity mapping'lerinin
+      # migration'ların oluşturduğu tablolarla eşleştiğini doğrular. Bu, hem `docker compose
+      # up` ile ayağa kaldırılan dev Postgres'inde hem de testlerin Testcontainers
+      # Postgres'inde aynı, tek gerçek şema kaynağını garanti eder.
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:
@@ -30,8 +30,14 @@ spring:
         jdbc:
           time_zone: UTC
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
 server:
-  port: 8080
+  # 8080, bu makinede port-ofis-backend tarafından zaten kullanılıyor - çakışmayı önlemek
+  # için bilinçli olarak 8082 seçildi. Bkz. README.md.
+  port: 8082
 
 logging:
   pattern:
@@ -39,10 +45,11 @@ logging:
   level:
     root: INFO
     com.interviewlab: DEBUG
-    # Hibernate SQL + bind parameter logging is opt-in per lab via the
-    # dedicated application-*.yml profiles / test classes, because with
-    # 30+ labs sharing one datasource, leaving it globally on would flood
-    # every unrelated test's console. Turn it on locally with:
-    #   logging.level.org.hibernate.SQL=DEBUG
-    #   logging.level.org.hibernate.orm.jdbc.bind=TRACE
-    org.hibernate.SQL: INFO
+    LAB: INFO
+    # Interactive dev modunda (bu dosya) Hibernate SQL + bind parametreleri her zaman AÇIK -
+    # /api/labs/* çağırdığında konsolda gerçek SQL'i görmen bunun için var. `test` profili
+    # (application-test.yml) bunu bilerek tekrar kapatır: 30+ lab tek bir datasource'u
+    # paylaşırken bunu testlerde açık bırakmak her testin konsolunu boğardı - testler zaten
+    # SqlStatementRecorder ile gerçek SQL üzerinde doğrudan assertion yapıyor.
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

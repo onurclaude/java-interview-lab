@@ -1,16 +1,21 @@
 package com.interviewlab.collectionstopic;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.interviewlab.collectionstopic.bad.CompoundCheckThenActCacheService;
 import com.interviewlab.collectionstopic.bad.UnsafeHashMapCacheService;
 import com.interviewlab.collectionstopic.good.AtomicComputeIfAbsentCacheService;
+import com.interviewlab.collectionstopic.good.BlockingQueueProducerConsumer;
 import com.interviewlab.collectionstopic.good.ConcurrentHashMapCacheService;
 import com.interviewlab.collectionstopic.good.SafeIterationListHolder;
 import java.util.ConcurrentModificationException;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
@@ -173,6 +178,56 @@ class CollectionsConcurrencyTest {
         start.countDown();
         done.await(10, TimeUnit.SECONDS);
         executor.shutdown();
+    }
+
+    // ---------- BlockingQueue: ArrayBlockingQueue (sınırlı) vs LinkedBlockingQueue (varsayılan sınırsız) ----------
+
+    @Test
+    void shouldBlockProducerWhenArrayBlockingQueueIsFull() throws Exception {
+        BlockingQueueProducerConsumer producerConsumer = new BlockingQueueProducerConsumer(new ArrayBlockingQueue<>(2));
+        producerConsumer.produce(1);
+        producerConsumer.produce(2); // kapasite (2) doldu
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<?> blockedProduce = executor.submit(() -> {
+                try {
+                    producerConsumer.produce(3); // BLOKLAMALI - kuyruk dolu
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            assertThatThrownBy(() -> blockedProduce.get(200, TimeUnit.MILLISECONDS))
+                    .as("kuyruk dolu iken put(), consume() ile yer açılana kadar BLOKLAMALI - hemen dönmemeli")
+                    .isInstanceOf(java.util.concurrent.TimeoutException.class);
+
+            producerConsumer.consume(); // yer aç
+            blockedProduce.get(2, TimeUnit.SECONDS); // artık tamamlanmalı
+            assertThat(producerConsumer.size()).isEqualTo(2);
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    void shouldNeverBlockProducerWithDefaultUnboundedLinkedBlockingQueue() throws Exception {
+        // LinkedBlockingQueue()'nun parametresiz constructor'ı Integer.MAX_VALUE kapasiteli -
+        // ExecutorService'in newFixedThreadPool'daki "gizli sınırsız kuyruk" tuzağıyla AYNI kök neden.
+        BlockingQueueProducerConsumer producerConsumer = new BlockingQueueProducerConsumer(new LinkedBlockingQueue<>());
+        for (int i = 0; i < 10_000; i++) {
+            producerConsumer.produce(i); // hiçbiri bloklamaz - "sınırlı" görünen bir kuyruk aslında sınırsız
+        }
+        assertThat(producerConsumer.size()).isEqualTo(10_000);
+    }
+
+    @Test
+    void shouldReturnFalseImmediatelyWithNonBlockingOfferWhenFull() {
+        BlockingQueueProducerConsumer producerConsumer = new BlockingQueueProducerConsumer(new ArrayBlockingQueue<>(1));
+        assertThat(producerConsumer.tryProduceNonBlocking(1)).isTrue();
+        assertThat(producerConsumer.tryProduceNonBlocking(2))
+                .as("offer(), put()'un aksine hiçbir zaman bloklamaz - kapasite doluysa hemen false döner")
+                .isFalse();
     }
 
     private static String expensiveValue() {

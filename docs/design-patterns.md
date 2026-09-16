@@ -1,6 +1,22 @@
 # Design Pattern'lar
 
-Kod: `com.interviewlab.patterns.*` — Testler: `DesignPatternsTest`
+Kod: `com.interviewlab.patterns.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger (Strategy/Factory/Adapter/Observer/
+Builder/Proxy için):**
+```http
+POST /api/labs/patterns/strategy/{bad,good}?paymentType=...
+POST /api/labs/patterns/factory/resolve?paymentType=EXTERNAL_PROVIDER
+POST /api/labs/patterns/adapter/{bad,good}
+POST /api/labs/patterns/observer/place-order
+GET  /api/labs/patterns/observer/state
+POST /api/labs/patterns/builder/{build,build-invalid}
+POST /api/labs/patterns/proxy/{without-logging,with-logging}
+```
+Tam breakpoint sırası için **`docs/DEBUGGER_LABS.md`** 34-38 numaralı girişlere bakın. Kalan
+diğer pattern'ler (Template Method/Observer'ın kendisi hariç Decorator/Facade/Singleton/Chain
+of Responsibility) kod-okuma + `DesignPatternsTest` ile en iyi gösterilir - bu ikincildir,
+Strategy/Factory/Adapter/Observer/Builder/Proxy için ise HTTP lab BİRİNCİLDİR.
 
 Aşağıdaki her pattern, tek bir paylaşılan checkout/payment domain'inde gerçek bir problemi,
 yerini aldığı naif alternatifle karşılaştırarak çözer. Tam "WHAT/WHY/WHEN NOT TO USE"

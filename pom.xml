@@ -45,12 +45,53 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+        <dependency>
+            <!-- Retry/CircuitBreaker/RateLimiter/Bulkhead/Timeout için - bkz. docs/resilience.md,
+                 com.interviewlab.web.lab.resilience.* -->
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
+        <!-- Security / JWT demo - bkz. docs/http-and-security.md, com.interviewlab.security.* -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- Database -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <!-- Şemayı Hibernate ddl-auto=update yerine versiyonlu migration'lar yönetir -
+                 hem dev Docker Postgres'i hem de test Testcontainers Postgres'i için tek,
+                 tutarlı kaynak (src/main/resources/db/migration). -->
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
         <dependency>
             <!-- Used only for the handful of pure in-memory Spring-context tests
@@ -117,8 +158,18 @@
                          reusing the fork lets Spring's test context cache avoid re-starting
                          that context per class, which matters a lot with 15+ test classes.
                          The pure-JUnit concurrency tests clean up their own threads/executors
-                         instead of relying on fork isolation for that. -->
-                    <argLine>-Xmx1536m</argLine>
+                         instead of relying on fork isolation for that.
+
+                         add-opens java.base/java.util=ALL-UNNAMED: gerçek, keşfedilmiş bir
+                         gereklilik - JavaCoreTest'in HashMap treeification testi,
+                         java.util.HashMap'in private `table` alanına reflection ile erişmeye
+                         çalışırken InaccessibleObjectException aldı: java.base modülü,
+                         java.util paketini PUBLİC API için export eder ama DEEP REFLECTION
+                         (setAccessible) için OPEN etmez - bu, Java 9'un modül sisteminin
+                         varsayılan davranışıdır ve bu proje `module-info.java` kullanmasa
+                         BİLE JDK'nın kendi modülleri için geçerlidir (bkz.
+                         docs/NOTES_CORRECTIONS.md reflection notu). -->
+                    <argLine>-Xmx1536m --add-opens java.base/java.util=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
         </plugins>

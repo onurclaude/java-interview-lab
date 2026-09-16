@@ -1,6 +1,15 @@
 # CompletableFuture
 
-Kod: `com.interviewlab.async.completablefuture.*` — Testler: `CompletableFutureTest`
+Kod: `com.interviewlab.async.completablefuture.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/completable-future/reset
+POST /api/labs/completable-future/sequential
+POST /api/labs/completable-future/parallel
+```
+`threadNames`/`distinctThreadCount` (GERÇEK ölçülür) ile durationMillis'i karşılaştır.
+`CompletableFutureTest`, AYNI davranışın otomatik regresyon kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

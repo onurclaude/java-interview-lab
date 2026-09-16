@@ -1,6 +1,15 @@
 # Spring @Async
 
-Kod: `com.interviewlab.async.spring.*` — Testler: `AsyncSelfInvocationTest`
+Kod: `com.interviewlab.async.spring.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/async/reset
+POST /api/labs/async/bad
+POST /api/labs/async/good
+POST /api/labs/async/void-exception
+```
+`AsyncSelfInvocationTest`, AYNI davranışın otomatik regresyon kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

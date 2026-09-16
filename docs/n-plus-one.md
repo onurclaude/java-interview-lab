@@ -1,6 +1,22 @@
 # N+1, Lazy/Eager Fetching ve Fetch Stratejileri
 
-Kod: `com.interviewlab.jpa.*` — Testler: `NPlusOneTest`
+Kod: `com.interviewlab.jpa.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/n-plus-one/reset
+GET  /api/labs/n-plus-one/bad
+GET  /api/labs/n-plus-one/good
+POST /api/labs/fetch/reset
+GET  /api/labs/fetch/lazy/bad
+GET  /api/labs/fetch/lazy/good
+GET  /api/labs/fetch/eager/bad
+```
+`lazy/bad`, transaction dışında erişilince GERÇEK bir `LazyInitializationException` fırlatır
+(simüle edilmez); `eager/bad`, `SqlStatementRecorder` ile GERÇEKTEN ölçülen gereksiz
+product-join sorgu sayısını gösterir. Tam breakpoint sırası için `docs/DEBUGGER_LABS.md`'nin
+"N+1" ve "LAZY/EAGER FETCH" bölümlerine bakın. `NPlusOneTest`, AYNI davranışın otomatik
+regresyon kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 
@@ -36,7 +52,8 @@ yakalanır - başlangıçtaki orders sorgusuna ek olarak, order başına bir tan
 @Query("select distinct o from Order o left join fetch o.orderItems")
 List<Order> findAllWithItemsFetchJoin();
 ```
-Tek sorgu, gerçek bir SQL JOIN, koleksiyonu sadece bu çağrı için doldurur.
+`orderItems` için tek sorgu, gerçek bir SQL JOIN — ama **"toplamda tek sorgu" değil**, bkz.
+aşağıdaki "Fetch join vs @EntityGraph: 'tek sorgu' iddiası YANLIŞ çıktı" bölümü.
 
 **`@EntityGraph`** (`EntityGraphOrderService`) — aynı tek-sorgu sonucu, JPQL'de elle
 yazmak yerine deklare edilmiş:
@@ -53,8 +70,28 @@ ihtiyacı olmadığında:
 List<OrderSummary> findAllSummaries();
 ```
 Entity yok, koleksiyon yok, persistence-context takip overhead'i yok - sadece ihtiyaç
-duyulan sütunlar. Üçü de toplamda tam olarak bir sorgu ürettiği kanıtlanmıştır
-(`shouldIssueOnlyOneQueryTotalWithFetchJoin`, `...WithEntityGraph`, `...WithDtoProjection`).
+duyulan sütunlar.
+
+## Fetch join vs @EntityGraph: "tek sorgu" iddiası YANLIŞ çıktı
+
+Üç yaklaşımın da `orderItems` N+1'ini çözdüğü kanıtlanmıştır (`shouldIssueOnlyOneQueryTotalWithFetchJoin`,
+`...WithEntityGraph`, `...WithDtoProjection` - "order-related" statement sayısı üçünde de 1).
+Ama bu proje interactive lab'ı (`/api/labs/n-plus-one/good`) gerçek SQL log'una karşı
+çalıştırdığında, "üçü de TOPLAMDA tam olarak 1 sorgu üretir" varsayımının **fetch join için
+yanlış** olduğu ortaya çıktı:
+
+| Yaklaşım | orderItems için sorgu | TOPLAM sorgu | Neden |
+|---|---|---|---|
+| Fetch join | 1 | **2** | `OrderItem.product` hâlâ statik `FetchType.EAGER` - fetch join sadece `orderItems`'ı hedefler, `product`'a dokunmaz, bu yüzden Hibernate onu AYRI bir sorguyla (hâlâ) eager yükler |
+| `@EntityGraph` | 1 | **1** | JPA'nın "fetch graph" kuralı: graph'ta AÇIKÇA listelenmeyen ilişkiler (`product` gibi), statik eşlemeleri EAGER olsa bile bu sorgu için LAZY'ye düşürülür |
+| DTO projection | 1 | **1** | Entity hiç materialize edilmiyor - EAGER/LAZY kavramı bu yaklaşım için zaten geçerli değil |
+
+Bu, `shouldStillIssueASeparateQueryForStillEagerProductAssociationWithFetchJoin()` ile
+kanıtlanmıştır (`SqlStatementRecorder.allStatements().size()` == 2, "order-related" filtresi
+olmadan). **Ders:** `@EntityGraph`, plain bir JOIN FETCH'in yapmadığı ek bir optimizasyon
+yapar (graph dışındaki EAGER ilişkileri LAZY'ye düşürmek) - "ikisi aynı şeyin iki söylenişi"
+varsayımı burada yanlıştır. Bu proje bunu varsaymak yerine gerçek SQL log'undan doğruladı -
+tam da bu projenin tüm felsefesi budur.
 
 ## EAGER neden bedava bir çözüm değil
 
@@ -98,10 +135,10 @@ tetiklendiğini gizler.
 
 ## Trade-off'lar
 
-| Çözüm | Sorgu sayısı | Yüklenen entity'ler | En uygun olduğu durum |
+| Çözüm | Sorgu sayısı (bu projenin şemasında) | Yüklenen entity'ler | En uygun olduğu durum |
 |---|---|---|---|
-| Fetch join | 1 | Tam `Order` + `OrderItem` | Yüklenen entity'leri sonradan değiştirmek gerekiyorsa |
-| `@EntityGraph` | 1 | Tam `Order` + `OrderItem` | Fetch join ile aynı, deklaratif stil |
+| Fetch join | 2 (`orderItems` için 1 + hâlâ EAGER `product` için 1) | Tam `Order` + `OrderItem` | Yüklenen entity'leri sonradan değiştirmek gerekiyorsa |
+| `@EntityGraph` | 1 | Tam `Order` + `OrderItem` | Fetch join'den DAHA İYİ - graph dışı EAGER ilişkileri de LAZY'ye düşürür |
 | DTO projection | 1 | Yok | Read-only, özet şeklinde veri |
 | EAGER mapping | Her zaman join'ler, her yüklemede | Tam, koşulsuz | Neredeyse hiçbir zaman doğru varsayılan değil |
 
@@ -119,11 +156,15 @@ tetiklendiğini gizler.
 ## 30 Saniyelik Mülakat Cevabı
 
 "N+1'i gerçek SQL logunda gördüm: 5 order için `findAll()` bir sorgu attı, ama her order'ın
-`getOrderItems()`'ına erişince 5 tane daha sorgu gitti - toplam 6. Fetch join veya
-@EntityGraph ile bunu tek sorguya indirdim. Ayrıca EAGER'ın 'ücretsiz çözüm' olmadığını da
-gösterdim: OrderItem'daki Product EAGER olduğu için, product'a hiç dokunmayan bir metod bile
-her seferinde product'ı join'liyordu. LazyInitializationException'ı da bizzat tetikledim:
-transaction kapandıktan sonra lazy koleksiyona erişince exception aldım - bu yüzden projede
+`getOrderItems()`'ına erişince 5 tane daha sorgu gitti - toplam 6. @EntityGraph ile bunu
+gerçekten tek sorguya indirdim - ama fetch join'i denediğimde şaşırtıcı bir şey buldum: o
+tam olarak 1 sorguya inmiyordu, 2'ye iniyordu, çünkü OrderItem.product hâlâ statik EAGER
+olduğu için ayrı bir sorguyla yükleniyordu. @EntityGraph'ın gerçekten 1'e inmesinin nedeni,
+JPA'nın fetch-graph kuralının graph dışındaki EAGER ilişkileri de LAZY'ye düşürmesiydi -
+ikisinin 'aynı şey' olmadığını gerçek SQL log'undan öğrendim. Ayrıca EAGER'ın 'ücretsiz
+çözüm' olmadığını da gösterdim: product'a hiç dokunmayan bir metod bile her seferinde
+product'ı join'liyordu. LazyInitializationException'ı da bizzat tetikledim: transaction
+kapandıktan sonra lazy koleksiyona erişince exception aldım - bu yüzden projede
 open-in-view'i bilinçli olarak kapalı tutuyorum."
 
 ## Takip Soruları

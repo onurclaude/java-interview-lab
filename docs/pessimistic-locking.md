@@ -1,7 +1,16 @@
 # Pessimistic Locking
 
 Kod: `com.interviewlab.locking.pessimistic.*`, `com.interviewlab.locking.deadlock.*`
-Testler: `PessimisticLockingTest`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger + DBeaver:**
+```http
+POST /api/labs/pessimistic/reset
+POST /api/labs/pessimistic/bad
+POST /api/labs/pessimistic/good
+```
+DBeaver'da kilit tutan satırı görmek için: `SELECT * FROM pg_locks WHERE relation =
+'lab_locking_product'::regclass;`. `PessimisticLockingTest`, AYNI davranışın otomatik
+regresyon kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

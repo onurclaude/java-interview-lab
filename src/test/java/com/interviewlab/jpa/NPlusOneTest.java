@@ -99,6 +99,24 @@ class NPlusOneTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
+    void shouldStillIssueASeparateQueryForStillEagerProductAssociationWithFetchJoin() {
+        // Beklenebilecek şeyin aksine ("fetch join = tam olarak 1 sorgu"), bu proje interactive
+        // lab'ı gerçek SQL log'una karşı doğrularken bunun YANLIŞ olduğunu keşfetti: `left join
+        // fetch o.orderItems`, orderItems N+1'ini çözer (yukarıdaki test bunu kanıtlıyor - 1
+        // "order-related" ifade), AMA OrderItem.product hâlâ statik FetchType.EAGER olduğu
+        // için Hibernate onu AYRI bir sorguyla yükler - TOPLAM 2 SQL ifadesi, 1 değil. Bkz.
+        // docs/n-plus-one.md "Fetch join vs @EntityGraph: 'tek sorgu' iddiası" bölümü.
+        int total = fetchJoinOrderService.countAllItemsAcrossOrders();
+        assertThat(total).isEqualTo(ORDER_COUNT * ITEMS_PER_ORDER);
+
+        long totalStatements = SqlStatementRecorder.allStatements().size();
+        assertThat(totalStatements)
+                .as("fetch join orderItems N+1'ini çözer, ama OrderItem.product hâlâ statik EAGER olduğu için "
+                        + "ayrı bir sorgu daha tetiklenir - toplamda 1 değil 2 SQL ifadesi")
+                .isEqualTo(2);
+    }
+
+    @Test
     void shouldIssueOnlyOneQueryTotalWithEntityGraph() {
         int total = entityGraphOrderService.countAllItemsAcrossOrders();
 

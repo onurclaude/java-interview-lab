@@ -2,6 +2,7 @@ package com.interviewlab.aop;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -41,9 +42,18 @@ public class ExecutionTimeAspect {
 
     private static final Logger log = LoggerFactory.getLogger(ExecutionTimeAspect.class);
     private final Map<String, Long> lastDurationsMillis = new ConcurrentHashMap<>();
+    /**
+     * Advice'ın GERÇEKTEN kaç kez çalıştığının sahte olmayan kanıtı - controller BUNU
+     * hesaplamaz/varsaymaz, SADECE bu advice'ın kendisi, gerçekten çalıştığı ANDA artırır.
+     * self-invocation senaryosunda bu sayaç HİÇ İLERLEMEZ, çünkü advice'ın kendisi HİÇ
+     * ÇALIŞMAZ (proxy'ye hiç uğranmadı) - bu, "aspectIntercepted" alanının fabricate
+     * edilmediğinin runtime kanıtıdır.
+     */
+    private final AtomicInteger interceptionCount = new AtomicInteger();
 
     @Around("@annotation(com.interviewlab.aop.TrackExecutionTime)")
     public Object trackExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        interceptionCount.incrementAndGet();
         long start = System.nanoTime();
         try {
             return joinPoint.proceed();
@@ -51,11 +61,19 @@ public class ExecutionTimeAspect {
             long elapsedMillis = (System.nanoTime() - start) / 1_000_000;
             String signature = joinPoint.getSignature().toShortString();
             lastDurationsMillis.put(signature, elapsedMillis);
-            log.info("TrackExecutionTime {} took {}ms", signature, elapsedMillis);
+            log.info("TrackExecutionTime {} took {}ms (interceptionCount={})", signature, elapsedMillis, interceptionCount.get());
         }
     }
 
     public Long lastDurationMillis(String methodShortSignature) {
         return lastDurationsMillis.get(methodShortSignature);
+    }
+
+    public int interceptionCount() {
+        return interceptionCount.get();
+    }
+
+    public void resetInterceptionCount() {
+        interceptionCount.set(0);
     }
 }

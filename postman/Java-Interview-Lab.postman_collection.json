@@ -1,0 +1,3707 @@
+{
+  "info": {
+    "_postman_id": "74cd74ed-70ba-4cf7-8c99-a4c4be7ff2b2",
+    "name": "Java Interview Lab",
+    "description": "Interactive labs for java-interview-lab. Each folder follows RESET -> BAD -> STATE -> GOOD -> STATE AFTER GOOD. See docs/INTERACTIVE_LABS.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 Lab Index",
+      "item": [
+        {
+          "name": "List all labs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01 Persistence",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Hibernate's persistence context tracks managed entities and flushes changes (dirty checking) automatically at transaction commit - you never call save()/update() for a field mutation on a managed entity; but a DETACHED entity's changes are silently lost.\n\nWHERE TO PUT BREAKPOINTS: PersistenceLifecycleService's detached-mutation method (BAD) and renameViaDirtyCheckingOnly (GOOD, changeName() call).\n\nWHAT I SHOULD PREDICT: BAD - the mutation on a detached entity never reaches the database (no UPDATE SQL logged). GOOD - an UPDATE is logged automatically at commit, with no explicit save() call.\n\nWHAT I SHOULD OBSERVE: Watch the console for `Hibernate: update ...` lines - they appear only at transaction commit for the GOOD path, and never for the BAD path.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What is dirty checking, and why does calling a setter on a detached entity not persist the change?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/persistence/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "persistence",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/persistence/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "persistence",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/persistence/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "persistence",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/persistence/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "persistence",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/persistence/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "persistence",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 Transactions",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: A @Transactional method rolls back ALL its database changes if it throws an unchecked exception - partial writes are never committed.\n\nWHERE TO PUT BREAKPOINTS: TransactionLabController's bad()/good() delegate methods, at the point right before the exception is thrown.\n\nWHAT I SHOULD PREDICT: BAD - after the exception, the earlier write in the SAME transaction is GONE (rolled back) when you query state afterward. GOOD - the write survives because it commits cleanly.\n\nWHAT I SHOULD OBSERVE: Call BAD, then STATE, and see that the record the method tried to write does not exist - the whole transaction rolled back, not just the failing statement.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: If an exception is thrown halfway through a @Transactional method, what happens to the database writes that already ran?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/transaction/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "transaction",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/transaction/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "transaction",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/transaction/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "transaction",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/transaction/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "transaction",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/transaction/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "transaction",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 Propagation",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: REQUIRES_NEW starts a genuinely separate, independent transaction that commits/rolls back on its own - but only when invoked through the Spring proxy (a separate bean), never via self-invocation (this.).\n\nWHERE TO PUT BREAKPOINTS: the self-invocation BAD method and the separate-bean GOOD method, plus the underlying REQUIRES_NEW method itself.\n\nWHAT I SHOULD PREDICT: BAD (self-invocation) - REQUIRES_NEW is silently ignored, everything runs in the SAME outer transaction. GOOD (separate bean) - the inner REQUIRES_NEW transaction really commits independently, even if the outer transaction later rolls back.\n\nWHAT I SHOULD OBSERVE: Trigger REQUIRES_NEW BAD, then STATE, then the GOOD variant, then STATE AFTER GOOD - compare whether the inner write survived an outer rollback in each case.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Why doesn't REQUIRES_NEW create a real nested transaction when called via this from the same class?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/propagation/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "propagation",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 REQUIRED",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/propagation/required",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "propagation",
+                "required"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 REQUIRES_NEW BAD (self-invocation)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/propagation/requires-new/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "propagation",
+                "requires-new",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/propagation/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "propagation",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 REQUIRES_NEW GOOD (separate bean)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/propagation/requires-new/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "propagation",
+                "requires-new",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/propagation/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "propagation",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 Isolation",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: READ_COMMITTED allows a non-repeatable read (a value you read once can change if you read it again in the same transaction, because another transaction committed in between); REPEATABLE_READ prevents this by holding a consistent snapshot.\n\nWHERE TO PUT BREAKPOINTS: IsolationAnomalyLab's two reads inside the same transaction, with a concurrent writer transaction running in between.\n\nWHAT I SHOULD PREDICT: READ_COMMITTED - the second read inside the same transaction returns a DIFFERENT value than the first (anomaly reproduced). REPEATABLE_READ - both reads return the SAME value (anomaly prevented).\n\nWHAT I SHOULD OBSERVE: Compare the two JSON responses field by field - firstRead vs secondRead.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What is a non-repeatable read, and which isolation level is the minimum needed to prevent it?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 READ_COMMITTED (non-repeatable read)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/non-repeatable-read/read-committed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "non-repeatable-read",
+                "read-committed"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 REPEATABLE_READ (prevented)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/non-repeatable-read/repeatable-read",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "non-repeatable-read",
+                "repeatable-read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 RESET (phantom/dirty)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08 Phantom read - READ_COMMITTED (new row appears)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/phantom-read/read-committed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "phantom-read",
+                "read-committed"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "09 Phantom read - REPEATABLE_READ (snapshot prevents it)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/phantom-read/repeatable-read",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "phantom-read",
+                "repeatable-read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "10 Dirty read - READ_UNCOMMITTED (Postgres upgrades it, never dirty)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/isolation/dirty-read/read-uncommitted",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "isolation",
+                "dirty-read",
+                "read-uncommitted"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 Optimistic Lock",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Optimistic locking (a @Version column) detects a lost-update conflict at commit time by comparing version numbers - it does NOT block concurrent transactions, it lets them race and then rejects the loser with a real OptimisticLockException.\n\nWHERE TO PUT BREAKPOINTS: OptimisticLockingLabController's bad()/good() methods, at the point where two REAL, separately-committed transactions both read the same row before either writes.\n\nWHAT I SHOULD PREDICT: BAD - the second transaction's write silently overwrites the first (lost update, if concurrency control is bypassed). GOOD - the second transaction's commit throws a genuine OptimisticLockException because the @Version column no longer matches.\n\nWHAT I SHOULD OBSERVE: Check the DB via DBeaver after each scenario - the version column value and whether both writers' changes are reflected or only one.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: How does @Version-based optimistic locking detect a conflict, and what exception does it throw?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/optimistic/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "optimistic",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/optimistic/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "optimistic",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/optimistic/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "optimistic",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/optimistic/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "optimistic",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/optimistic/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "optimistic",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 Pessimistic Lock",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Pessimistic locking (SELECT ... FOR UPDATE) makes a second transaction physically WAIT for the row-level lock to be released, rather than racing and failing later.\n\nWHERE TO PUT BREAKPOINTS: PessimisticLockingLabController's good() method, right at the SELECT ... FOR UPDATE call, and the second concurrent request's equivalent call.\n\nWHAT I SHOULD PREDICT: BAD - two concurrent readers/writers race with no lock, one can overwrite the other. GOOD - the second request BLOCKS until the first transaction commits or rolls back.\n\nWHAT I SHOULD OBSERVE: In DBeaver, run `SELECT * FROM pg_locks WHERE relation = 'lab_account'::regclass;` while a pessimistic-lock request is in flight to see the real row lock held.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What is the difference between SELECT ... FOR UPDATE and optimistic locking, and when would you choose one over the other?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/pessimistic/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "pessimistic",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/pessimistic/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "pessimistic",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/pessimistic/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "pessimistic",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/pessimistic/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "pessimistic",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/pessimistic/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "pessimistic",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 ExecutorService",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: A fixed thread pool's size and its queue capacity are two SEPARATE things - a small pool with an unbounded queue can silently accept unlimited work and grow memory forever; rejection policies (AbortPolicy/CallerRunsPolicy) change what happens when a BOUNDED queue is full.\n\nWHERE TO PUT BREAKPOINTS: ExecutorLabController.bad() at the `tpe.getQueue().size()` line.\n\nWHAT I SHOULD PREDICT: BAD - the queue size grows without bound as tasks are submitted faster than they complete. AbortPolicy - later submissions throw RejectedExecutionException. CallerRunsPolicy - the calling thread itself executes the rejected task instead of throwing.\n\nWHAT I SHOULD OBSERVE: Compare pool size (fixed) against queue size (growing) in the BAD response.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What happens when a ThreadPoolExecutor's queue is full, and what do the different RejectedExecutionHandler policies do differently?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/executor/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "executor",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD (unbounded queue)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/executor/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "executor",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/executor/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "executor",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD (AbortPolicy)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/executor/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "executor",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 CallerRunsPolicy",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/executor/caller-runs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "executor",
+                "caller-runs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 DiscardPolicy (silent drop, id=3 never runs)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/executor/discard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "executor",
+                "discard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 DiscardOldestPolicy (oldest queued task dropped, id=2 never runs)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/executor/discard-oldest",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "executor",
+                "discard-oldest"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 CompletableFuture",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: supplyAsync() returns immediately without blocking - the actual work runs concurrently on a separate thread; chaining .thenApply()/.get() sequentially instead of composing with allOf() forces work back into serial execution, wasting the parallelism.\n\nWHERE TO PUT BREAKPOINTS: ComposedAggregationService.aggregateConcurrently() at the CompletableFuture.allOf(...) line.\n\nWHAT I SHOULD PREDICT: SEQUENTIAL (bad) - total duration is roughly the SUM of each individual call's duration. PARALLEL (good) - total duration is roughly the MAX of the individual durations, because they ran concurrently.\n\nWHAT I SHOULD OBSERVE: Compare totalDuration between the two responses - it should be dramatically smaller for PARALLEL given the same simulated per-call delays.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Why does calling .join() immediately after each supplyAsync() call defeat the purpose of using CompletableFuture at all?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/completable-future/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "completable-future",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 SEQUENTIAL (bad)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/completable-future/sequential",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "completable-future",
+                "sequential"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 PARALLEL (good)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/completable-future/parallel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "completable-future",
+                "parallel"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/completable-future/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "completable-future",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "09 Spring Async",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: @Async, like @Transactional, only takes effect through the Spring proxy - calling an @Async method via this from inside the same bean runs it SYNCHRONOUSLY on the calling thread, not asynchronously.\n\nWHERE TO PUT BREAKPOINTS: the self-invocation BAD method and the separate-bean GOOD method, checking Thread.currentThread().getName() at the point the supposedly-async work executes.\n\nWHAT I SHOULD PREDICT: BAD - the async method runs on the SAME thread as the caller (proxy bypassed). GOOD - it runs on a DIFFERENT thread from Spring's task executor.\n\nWHAT I SHOULD OBSERVE: Compare the threadName field in each response - BAD and the caller's thread should match; GOOD should differ.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Why doesn't @Async actually run asynchronously when called from another method in the same class?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/async/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "async",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD (self-invocation)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/async/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "async",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/async/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "async",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD (separate bean)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/async/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "async",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 void exception (fire-and-forget)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/async/void-exception",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "async",
+                "void-exception"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10 ThreadLocal",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: ThreadLocal state outlives the logical task that set it - in a reused thread pool worker, a value set by one task is still visible to the NEXT unrelated task on the same thread unless you explicitly call remove() in a finally block.\n\nWHERE TO PUT BREAKPOINTS: ThreadLocalLabController.bad() at the second Future's submission, and the GOOD variant's try/finally remove() call.\n\nWHAT I SHOULD PREDICT: BAD - task2 (unrelated to task1) sees task1's leftover correlation id on the reused worker thread. GOOD - each task sees a clean/correct ThreadLocal value because the previous task removed its own.\n\nWHAT I SHOULD OBSERVE: Compare the correlationId returned for task2 in BAD vs GOOD.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Why is ThreadLocal.remove() mandatory when using ThreadLocal with a pooled ExecutorService?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/threadlocal/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "threadlocal",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD (leak)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/threadlocal/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "threadlocal",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/threadlocal/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "threadlocal",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD (try/finally remove)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/threadlocal/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "threadlocal",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11 Bean Scopes & Lifecycle",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: @Service beans are singletons by default (shared, so mutable state races); prototype beans give a fresh instance per lookup, but only when accessed via ObjectProvider or a scoped proxy, never via a plain injected field; request/session/application scopes are backed by REAL Spring web-scope proxies, not manually-created objects; bean creation follows a fixed order (constructor -> BeanPostProcessor.before -> @PostConstruct -> BeanPostProcessor.after).\n\nWHERE TO PUT BREAKPOINTS: MutableSingletonPriceService.calculateDiscountedPrice() (singleton race), SingletonWithObjectProvider.getWorkerId() (prototype), RequestScopedIdHolder/SessionScopedIdHolder constructors, BeanLifecycleDemoBean's constructor/@PostConstruct and BeanLifecycleLoggingPostProcessor.\n\nWHAT I SHOULD PREDICT: singleton race under concurrent load can produce a wrong price; prototype calls return a DIFFERENT worker id each time; request scope returns the SAME id twice within one HTTP call but a DIFFERENT id across two separate calls; session scope stays STABLE across calls sharing a cookie and changes once cookies are cleared.\n\nWHAT I SHOULD OBSERVE: For session scope (GET /lab/scopes/session), Postman's Cookie Jar handles this automatically - the server sets a JSESSIONID cookie on the first response, Postman stores it and resends it on every later request from the SAME cookie jar/environment, so the sessionScopedId stays IDENTICAL across repeated calls. To see a NEW id: open Postman's Cookies manager (link under the Send button, or Settings > Cookies) and remove the JSESSIONID cookie for this host, or run the request from a different environment/cookie jar - the very next call gets a fresh session and a fresh id.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What's the actual difference between prototype scope and request scope, and why is a mutable field in a singleton dangerous?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/scopes/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "scopes",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 Singleton BAD (race)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/scopes/singleton/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "scopes",
+                "singleton",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 Singleton GOOD (stateless)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/scopes/singleton/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "scopes",
+                "singleton",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 Prototype BAD (cached ref)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/scopes/prototype/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "scopes",
+                "prototype",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 Prototype GOOD (ObjectProvider/ScopedProxy)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/scopes/prototype/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "scopes",
+                "prototype",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 Bean Lifecycle order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/scopes/lifecycle",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "scopes",
+                "lifecycle"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/scopes/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "scopes",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08 Request scope (call twice, compare)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lab/scopes/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lab",
+                "scopes",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "09 Session scope (needs cookie jar)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lab/scopes/session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lab",
+                "scopes",
+                "session"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "10 Application scope",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lab/scopes/application",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lab",
+                "scopes",
+                "application"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12 AOP",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Spring AOP advice (e.g. @Around, @Transactional, @Async) is woven at PROXY boundaries, not into the target class bytecode. Calling a method via this from inside the same bean completely bypasses the proxy, so the advice never runs.\n\nWHERE TO PUT BREAKPOINTS: SelfInvocationTimingService.processOrder() and .slowStep() (BAD path); OrderProcessingService.processOrder() and SlowStepService.slowStep() (GOOD path); ExecutionTimeAspect.trackExecutionTime() (should NOT hit in BAD, SHOULD hit in GOOD).\n\nWHAT I SHOULD PREDICT: In BAD, aspectIntercepted will be false because this.slowStep() never crosses the proxy. In GOOD, aspectIntercepted will be true with a real measured executionTimeMs.\n\nWHAT I SHOULD OBSERVE: Call POST self-invocation/bad, then GET proxy-info to see the real runtime class names (CGLIB proxy suffix on SlowStepService, not on SelfInvocationTimingService via the this-call).\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Why doesn't @Transactional/@Async work when called from another method in the same class?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/aop/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "aop",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD (self-invocation, this.slowStep())",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/aop/self-invocation/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "aop",
+                "self-invocation",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE AFTER BAD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/aop/self-invocation/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "aop",
+                "self-invocation",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD (separate bean, real proxy)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/aop/self-invocation/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "aop",
+                "self-invocation",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/aop/self-invocation/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "aop",
+                "self-invocation",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 PROXY INFO (AopUtils.isCglibProxy/isJdkDynamicProxy)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/aop/proxy-info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "aop",
+                "proxy-info"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "13 Exceptions",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Swallowing an exception (empty catch block) silently hides a real failure; rethrowing only the message (`throw new RuntimeException(e.getMessage())`) loses the original stack trace and cause chain, making production debugging much harder than wrapping with the original exception as `cause`.\n\nWHERE TO PUT BREAKPOINTS: the swallowed-exception BAD method's empty/near-empty catch block, the lossy-rethrow BAD method's `new RuntimeException(e.getMessage())` line, and the GOOD method's `new RuntimeException(msg, e)` line.\n\nWHAT I SHOULD PREDICT: BAD (swallowed) - the caller never learns anything failed. BAD (lossy rethrow) - the resulting exception's getCause() is null, the original stack trace is gone. GOOD - getCause() returns the original exception, full stack trace preserved.\n\nWHAT I SHOULD OBSERVE: Inspect the HTTP error body for each scenario and compare whether a cause chain / original exception type is present.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Why is `catch (Exception e) { throw new RuntimeException(e.getMessage()); }` an anti-pattern, and what should you do instead?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/exceptions/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "exceptions",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD (swallowed)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/exceptions/swallowed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "exceptions",
+                "swallowed"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 BAD (lossy rethrow)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/exceptions/lossy-rethrow",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "exceptions",
+                "lossy-rethrow"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/exceptions/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "exceptions",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 GOOD (wrapped with cause)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/exceptions/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "exceptions",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 HTTP error body demo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lab/exceptions/charge?cardToken=tok_123&amount=50.0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lab",
+                "exceptions",
+                "charge?cardToken=tok_123&amount=50.0"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "14 N+1",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Lazy-loading a collection inside a loop over parent entities triggers ONE extra SELECT per parent (the N+1 problem) - fetch join / entity graph / DTO projection collapse this into a SINGLE query.\n\nWHERE TO PUT BREAKPOINTS: the BAD method's loop over parents (watch Hibernate SQL logging in the console, count the SELECT statements), and the GOOD method's single fetch-join query.\n\nWHAT I SHOULD PREDICT: BAD - console logs 1 SELECT for parents + N SELECTs (one per parent) for children. GOOD - console logs exactly 1 SELECT total, regardless of N.\n\nWHAT I SHOULD OBSERVE: Count the `Hibernate:` lines printed to the console for each scenario - the response also reports the measured query count directly.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What is the N+1 select problem, and what are the three main ways to fix it in JPA/Hibernate?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/n-plus-one/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "n-plus-one",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD (lazy, N+1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/n-plus-one/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "n-plus-one",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/n-plus-one/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "n-plus-one",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD (fetch join / entity graph / DTO)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/n-plus-one/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "n-plus-one",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "15 Design Patterns (legacy demo endpoints)",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: these are early demo endpoints for optimistic/pessimistic locking retained for backward compatibility - prefer folders 05 and 06 (Optimistic Lock / Pessimistic Lock) for the fully-specified, audited version of these labs.\n\nWHERE TO PUT BREAKPOINTS: see folder 05/06 INFO entries.\n\nWHAT I SHOULD PREDICT: same behavior as folders 05/06.\n\nWHAT I SHOULD OBSERVE: same as folders 05/06.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: see folder 05/06 INFO entries."
+          },
+          "response": []
+        },
+        {
+          "name": "Optimistic lock demo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lab/optimistic-lock/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lab",
+                "optimistic-lock",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pessimistic lock demo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lab/pessimistic-lock/run?productId=1&amount=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lab",
+                "pessimistic-lock",
+                "run?productId=1&amount=1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "16 Design Patterns (Strategy)",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: replacing an if/else chain that picks payment logic by type with the Strategy pattern (a PaymentStrategy interface + a Factory that resolves the right implementation by key) makes adding a new payment method a pure addition (new class + factory entry), not an edit to existing branching logic.\n\nWHERE TO PUT BREAKPOINTS: the BAD if/else dispatcher and the GOOD factory's strategy-resolution line, plus the chosen PaymentStrategy implementation's pay() method.\n\nWHAT I SHOULD PREDICT: BAD and GOOD produce the SAME business result for CREDIT_CARD, but GOOD resolves the WALLET/BANK_TRANSFER strategies without touching any conditional branching code.\n\nWHAT I SHOULD OBSERVE: Compare the responses for CREDIT_CARD (both BAD and GOOD) then WALLET and BANK_TRANSFER (GOOD only, no BAD equivalent needed to prove the point).\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: How does the Strategy pattern avoid the open/closed principle violation of a growing if/else or switch statement?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 BAD (if/else) - CREDIT_CARD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/strategy/bad?paymentType=CREDIT_CARD&amount=100.0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "strategy",
+                "bad?paymentType=CREDIT_CARD&amount=100.0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 GOOD (Strategy+Factory) - CREDIT_CARD",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/strategy/good?paymentType=CREDIT_CARD&amount=100.0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "strategy",
+                "good?paymentType=CREDIT_CARD&amount=100.0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 GOOD - WALLET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/strategy/good?paymentType=WALLET&amount=50.0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "strategy",
+                "good?paymentType=WALLET&amount=50.0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD - BANK_TRANSFER",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/strategy/good?paymentType=BANK_TRANSFER&amount=200.0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "strategy",
+                "good?paymentType=BANK_TRANSFER&amount=200.0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "17 Resilience4j",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Circuit Breaker trips from CLOSED to OPEN after a failure threshold, then rejects calls immediately (fail-fast) without even attempting them, then probes recovery via HALF_OPEN; Retry re-attempts a failing call a bounded number of times; RateLimiter caps calls per time window; Bulkhead caps concurrent calls; Timeout aborts a call that runs too long; Fallback supplies a default response when all else is exhausted.\n\nWHERE TO PUT BREAKPOINTS: ResilienceLabController's individual scenario methods, and the underlying Resilience4j-annotated service methods (@CircuitBreaker/@Retry/@RateLimiter/@Bulkhead/@TimeLimiter/@Fallback).\n\nWHAT I SHOULD PREDICT: Circuit Breaker - after enough failures, the circuit state visibly changes to OPEN and subsequent calls are rejected WITHOUT executing the underlying method at all. Retry - a call that fails twice then succeeds on the third attempt returns success, with the retry count visible in the response.\n\nWHAT I SHOULD OBSERVE: Call the RESET endpoint between scenarios so state doesn't bleed across experiments; watch the response's reported state/attempt counters.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What are the states of a circuit breaker, and what triggers each transition?\n\nEXTERNAL DEPENDENCY CONFIG: POST /api/labs/resilience/external/config with a body like {\"failNext\": 10, \"delayMs\": 0} (or {\"alwaysFail\": true}) arms the fake FlakyExternalService BEFORE you trigger a scenario - GET /api/labs/resilience/external/state lets you verify what's currently armed. The circuit-breaker scenario specifically relies on this: it no longer configures failures itself, so calling it without a prior /external/config leaves the circuit CLOSED the whole time (every call just succeeds) - that itself is a real, observable lesson about configuration-dependent behavior."
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "01b Configure external dependency (failNext=10)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"failNext\": 10, \"delayMs\": 0}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/external/config",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "external",
+                "config"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "01c External state (verify config)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/external/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "external",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 Retry (succeeds after 2 failures)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/retry",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "retry"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 Retry exhausted (always fails)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/retry-exhausted",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "retry-exhausted"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 Circuit Breaker (CLOSED->OPEN, fail-fast)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/circuit-breaker",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "circuit-breaker"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 Rate Limiter (2 per second)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/rate-limiter",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "rate-limiter"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 Bulkhead (max 2 concurrent)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/bulkhead",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "bulkhead"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 Timeout (500ms call, 100ms limit)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/timeout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "timeout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08 Fallback (default response on exhaustion)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/fallback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "fallback"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "09 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/resilience/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "resilience",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "18 Security / JWT",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Spring Security's filter chain intercepts every request before it reaches a controller; a JWT-based endpoint returns 401 with no token, 403 when the token is valid but lacks the required authority/role, and 200 only when both authentication AND authorization succeed.\n\nWHERE TO PUT BREAKPOINTS: the JWT filter's token-validation method, and SecurityLabController's protected/admin-only endpoints.\n\nWHAT I SHOULD PREDICT: no token -> 401. valid USER token on an ADMIN-only endpoint -> 403. valid ADMIN token on the same endpoint -> 200.\n\nWHAT I SHOULD OBSERVE: Log in as USER and ADMIN separately, save each JWT into the jwt_token environment variable, then compare the three response status codes directly.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What's the practical difference between a 401 and a 403 response, and where in the Spring Security filter chain does each originate?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 LOGIN as USER (copy token into jwt_token env var)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/security/login?username=ada&role=USER",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "security",
+                "login?username=ada&role=USER"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 PROTECTED without token (expect 401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/security/protected",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "security",
+                "protected"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 PROTECTED with token (expect 200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/security/protected",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "security",
+                "protected"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 ADMIN-ONLY with USER token (expect 403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/security/admin-only",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "security",
+                "admin-only"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 LOGIN as ADMIN (copy token into jwt_token env var)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/security/login?username=grace&role=ADMIN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "security",
+                "login?username=grace&role=ADMIN"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 ADMIN-ONLY with ADMIN token (expect 200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/security/admin-only",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "security",
+                "admin-only"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/security/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "security",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "19 Race Condition (concurrency counter)",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: count++ is NOT atomic - it is read, increment, write as three separate steps (getfield/iadd/putfield). When multiple threads interleave these steps, updates are lost. AtomicInteger.incrementAndGet() uses a hardware CAS instruction to make the same operation a single, indivisible step.\n\nWHERE TO PUT BREAKPOINTS: UnsynchronizedIntCounter.increment() (count++ line) for BAD; AtomicCounterService.increment() for GOOD. Open the Threads panel while stopped to see many worker threads stopped at the exact same line.\n\nWHAT I SHOULD PREDICT: BAD - actual will be LESS than expected (200000), and the exact lost count will differ every run (nondeterministic). GOOD - actual will EXACTLY equal expected, every single run.\n\nWHAT I SHOULD OBSERVE: Run BAD several times with the same threads/increments and see lostUpdates change each time - this is the entire point: race conditions are not a fixed, reproducible number.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Why is count++ not thread-safe, and how does AtomicInteger fix it without using a lock?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/counter/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "counter",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD (unsynchronized count++, 20 threads x 10000)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/counter/bad?threads=20&increments=10000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "counter",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE AFTER BAD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/counter/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "counter",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD (AtomicInteger, 20 threads x 10000)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/counter/good?threads=20&increments=10000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "counter",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/counter/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "counter",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "20 Locking Primitives (synchronized-ReentrantLock-RWLock-StampedLock)",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: synchronized and ReentrantLock both provide MUTUAL EXCLUSION - only one thread may be in the critical section at a time - but ReentrantLock gives you an explicit lifecycle (lock()/unlock()) you can observe as a log. ReadWriteLock lets MULTIPLE readers proceed concurrently while excluding writers. StampedLock's optimistic read takes NO lock at all and validates afterward.\n\nWHERE TO PUT BREAKPOINTS: LockingPrimitivesLabController.runLockLifecycleDemo() at lifecycleLog.add(...LOCK_ACQUIRED) and maxConcurrentHolders.updateAndGet(...); IntrinsicMonitorCounter.incrementViaMethod(); ReadWriteLockCache.withReadLockHeld(...); StampedLockPoint.distanceFromOrigin() at tryOptimisticRead()/validate().\n\nWHAT I SHOULD PREDICT: reentrant-lock/bad -> maxConcurrentHolders will be measured GREATER THAN 1 (no mutual exclusion). reentrant-lock/good -> maxConcurrentHolders will be measured EXACTLY 1, every run. read-write-lock/demo -> all readers acquire concurrently (fast). stamped-lock/demo -> distanceFromOrigin = 5.0 with no lock ever taken.\n\nWHAT I SHOULD OBSERVE: Compare the lifecycleLog array between bad and good - in bad, multiple workers' ATTEMPTING_LOCK/LOCK_ACQUIRED entries interleave BEFORE any WORK entry; in good, each worker's four log lines appear as a clean, uninterrupted block.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What is the actual difference between synchronized and ReentrantLock? When would you reach for ReadWriteLock or StampedLock instead?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 synchronized BAD (no lock, 10x2000)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/synchronized/bad?threads=10&increments=2000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "synchronized",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 synchronized GOOD (intrinsic monitor, 10x2000)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/synchronized/good?threads=10&increments=2000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "synchronized",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 ReentrantLock BAD (no lock, lifecycle log, 4 threads)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/reentrant-lock/bad?threads=4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "reentrant-lock",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 ReentrantLock GOOD (lifecycle log, maxConcurrentHolders=1, 4 threads)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/reentrant-lock/good?threads=4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "reentrant-lock",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 ReadWriteLock demo (5 concurrent readers)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/read-write-lock/demo?readerCount=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "read-write-lock",
+                "demo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 StampedLock demo (optimistic read)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/stamped-lock/demo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "stamped-lock",
+                "demo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08 ABA problem BAD (AtomicReference CAS false positive)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/aba/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "aba",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "09 ABA problem GOOD (AtomicStampedReference detects it)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/aba/good",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "aba",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "21 volatile (visibility vs atomicity)",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: volatile guarantees VISIBILITY (a write is immediately visible to other threads) but NOT atomicity. A compound operation like count++ (read-modify-write) STILL races even on a volatile field. volatile is correct ONLY for single reads/writes (like a stop flag), never for compound updates.\n\nWHERE TO PUT BREAKPOINTS: VolatileCounter.increment() (count++ line) for the misconception check; ShutdownFlagWorker.requestStop() (single assignment) for the correct-usage case.\n\nWHAT I SHOULD PREDICT: misconception-check -> stillRaced will be true, actual less than expected, EVEN THOUGH the field is volatile. correct-usage -> workerStoppedWithinTimeout will be true - a single volatile assignment IS enough here because there's no compound operation involved.\n\nWHAT I SHOULD OBSERVE: Run misconception-check several times - the lost-update pattern looks IDENTICAL to the plain (non-volatile) race-condition lab, proving volatile alone did not fix it.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: If I mark a counter volatile, is it now thread-safe? Why or why not?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 Misconception check (volatile count++ still races, 20x2000)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/volatile/misconception-check?threads=20&increments=2000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "volatile",
+                "misconception-check"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 Correct usage (shutdown flag, single assignment)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/concurrency/volatile/correct-usage",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "concurrency",
+                "volatile",
+                "correct-usage"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "22 Design Patterns (Factory-Adapter-Observer-Builder-Proxy)",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: five backend-realistic pattern applications in the SAME checkout/payment domain (not toy Dog/Cat/Shape examples) - Factory (PaymentStrategyFactory resolves ANY PaymentStrategy bean, Strategy AND Adapter implementations alike), Adapter (ExternalPaymentProviderAdapter hides a genuinely incompatible third-party SDK contract - cents as long, integer status codes - behind the app's own PaymentStrategy interface), Observer (OrderPlacementService publishes a real Spring ApplicationEvent that TWO independent @EventListener beans react to, with zero coupling to the publisher), Builder (OrderRequest is immutable and only exists fully-validated, after build() succeeds), Proxy (GreeterProxyFactory is a minimal, from-scratch JDK dynamic proxy - the same mechanism Spring's own @Transactional/@Async/@Aspect proxies are built on; compare with the REAL Spring CGLIB proxy at GET /api/labs/aop/proxy-info).\n\nWHERE TO PUT BREAKPOINTS: ExternalPaymentProviderAdapter.pay() (Adapter); OrderPlacementService.placeOrder() + InventoryReservationListener/EmailNotificationListener.onOrderPlaced() (Observer); OrderRequest.Builder.build() (Builder, the validation-throw line); GreeterProxyFactory.withLogging()'s InvocationHandler lambda (Proxy).\n\nWHAT I SHOULD PREDICT: adapter/bad duplicates the cent-conversion logic at the call site; adapter/good hides it entirely behind PaymentStrategy. observer/place-order flips BOTH listeners' state from a single publishEvent() call. builder/build-invalid throws IllegalStateException from inside build() itself, never producing a half-built object. proxy/with-logging shows before:greet/after:greet bracketing the real call; proxy/without-logging shows neither.\n\nWHAT I SHOULD OBSERVE: compare adapter/bad vs adapter/good's response shape (raw status code vs clean PaymentStrategy result); compare proxy/without-logging vs proxy/with-logging's interceptionLog array.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Give a REAL example (not Dog/Cat) of Factory, Adapter, Observer, Builder and Proxy you've actually used, and explain what problem each one solved."
+          },
+          "response": []
+        },
+        {
+          "name": "01 Factory - resolve EXTERNAL_PROVIDER via PaymentStrategyFactory",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/factory/resolve?paymentType=EXTERNAL_PROVIDER&amount=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "factory",
+                "resolve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 Adapter BAD (raw SDK call, cent conversion duplicated)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/adapter/bad?amount=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "adapter",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 Adapter GOOD (ExternalPaymentProviderAdapter, single translation point)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/adapter/good?amount=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "adapter",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 Observer - place order (fires 2 independent listeners)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/observer/place-order?orderId=order-1&amount=75",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "observer",
+                "place-order"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 Observer - STATE (both listeners' accumulated state)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/observer/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "observer",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 Builder - build valid OrderRequest",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/builder/build?customerId=cust-1&items=item-a&items=item-b&giftWrap=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "builder",
+                "build"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 Builder - build INVALID (missing items, throws)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/builder/build-invalid?customerId=cust-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "builder",
+                "build-invalid"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08 Proxy - without logging (no interception)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/proxy/without-logging?name=Ada",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "proxy",
+                "without-logging"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "09 Proxy - with logging (JDK dynamic proxy interception)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/proxy/with-logging?name=Ada",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "proxy",
+                "with-logging"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "10 STATE (all pattern labs)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/patterns/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "patterns",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "23 Lazy-Eager Fetch",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: a lazy JPA relationship is a proxy that can only be initialized while its Hibernate session is open - accessing it AFTER the owning @Transactional method returns throws a REAL LazyInitializationException. Separately, a FetchType.EAGER relationship is loaded on EVERY load of its owning entity, even when the calling code never reads it - trading N+1 for unconditional, unnecessary work.\n\nWHERE TO PUT BREAKPOINTS: LazyInitializationDemoService.loadOrderWithoutTouchingItems() (watch the transaction/session end as the method returns); LazyEagerLabController.lazyBad() at order.getOrderItems().size() (the line that throws); LazyAccessWithinTransactionService.loadOrderAndCountItemsWithinTransaction() (access happens INSIDE the transaction); EagerFetchAlwaysLoadsService.sumQuantitiesOnly() (never touches product, yet triggers its query).\n\nWHAT I SHOULD PREDICT: lazy/bad throws a genuine LazyInitializationException with threwLazyInitializationException=true. lazy/good returns the same count successfully because access happens before the transaction ends. eager/bad reports queriesTouchingProductTable > 0 even though the method's own code never reads OrderItem.getProduct().\n\nWHAT I SHOULD OBSERVE: compare the two lazy responses' threwLazyInitializationException field; for eager, compare totalQueries and queriesTouchingProductTable to see the hidden cost.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: Why does accessing a lazy collection outside its transaction throw LazyInitializationException, and why is making every relationship EAGER not a real fix for N+1?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/fetch/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "fetch",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 Lazy BAD (access outside transaction, real LazyInitializationException)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/fetch/lazy/bad?orderId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "fetch",
+                "lazy",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 Lazy GOOD (access inside transaction)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/fetch/lazy/good?orderId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "fetch",
+                "lazy",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 Eager BAD (product joined even though never read)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/fetch/eager/bad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "fetch",
+                "eager",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/fetch/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "fetch",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "24 Cache-Aside",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: Cache-Aside (lazy loading) means the APPLICATION manages the cache explicitly - read checks the cache first and only falls through to the database on a miss (populating the cache afterward); write goes to the database first, then INVALIDATES (removes) the cache entry rather than trying to update it in place.\n\nWHERE TO PUT BREAKPOINTS: NoCacheProductService.read() (BAD, every call increments databaseReadCount); CacheAsideProductService.read() at cache.get(id) (GOOD, the miss/hit branch); CacheAsideProductService.write() at cache.remove(id) (invalidate-not-update).\n\nWHAT I SHOULD PREDICT: calling bad/read three times in a row increments databaseReadCount to 3. Calling good/read three times in a row increments databaseReadCount to 1 only (first call is a miss, the next two are hits). After good/write, the next good/read is a miss again (cache was invalidated, not updated).\n\nWHAT I SHOULD OBSERVE: compare databaseReadCount growth between the BAD and GOOD sequences for the SAME number of calls; watch isCachedNow flip to false immediately after a write.\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What is the Cache-Aside pattern, and why does a write typically invalidate the cache entry instead of updating it directly?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/cache/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "cache",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD read (no cache, every call hits DB) x1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/cache/bad/read?id=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "cache",
+                "bad",
+                "read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 GOOD read (cache-aside, first call = miss) x1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/cache/good/read?id=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "cache",
+                "good",
+                "read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD read again (should now be a cache HIT)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/cache/good/read?id=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "cache",
+                "good",
+                "read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 GOOD write (DB write then cache INVALIDATE)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/cache/good/write?id=1&name=NewWidget",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "cache",
+                "good",
+                "write"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 GOOD read after write (miss again - cache was invalidated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/cache/good/read?id=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "cache",
+                "good",
+                "read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 STATE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/cache/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "cache",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "25 Deadlock (database-level, FOR UPDATE)",
+      "item": [
+        {
+          "name": "00 INFO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "WHAT AM I LEARNING: a real, database-level deadlock - two concurrent transactions each hold a row lock (SELECT ... FOR UPDATE) the other one needs, in opposite orders (T1: A then B, T2: B then A). This is NOT a JVM-internal deadlock (no ThreadMXBean involved) - PostgreSQL's OWN deadlock detector notices the cycle and kills exactly one transaction with a real 'deadlock detected' error. Crucially, the HTTP request never hangs forever: Postgres's deadlock_timeout (default 1s) resolves the cycle almost immediately, and the controller also bounds every Future.get() with a timeout as a second safety net.\n\nWHERE TO PUT BREAKPOINTS: InconsistentLockOrderTransferService.transferStock() at both findByIdForUpdate() calls (BAD); DeterministicOrderTransferService.transferStock() at the firstId/secondId ordering logic (GOOD).\n\nWHAT I SHOULD PREDICT: BAD - exactly one of T1/T2 fails with a message containing 'deadlock detected', the other commits; total wall-clock time is close to Postgres's deadlock_timeout (about 1 second), not the 10-second bound. GOOD - both transactions commit, no deadlock, because both always lock the lower id first.\n\nWHAT I SHOULD OBSERVE: run BAD several times - which of T1/T2 fails is NOT always the same (nondeterministic, depends on exact timing); stockConserved should always be true either way (100+100=200 total stock never lost).\n\nWHAT INTERVIEW QUESTION THIS ANSWERS: What causes a database-level deadlock, how does Postgres resolve it, and what's the standard fix (consistent lock ordering)?"
+          },
+          "response": []
+        },
+        {
+          "name": "01 RESET",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/deadlock/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "deadlock",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 BAD (inconsistent lock order - real Postgres deadlock)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/deadlock/bad?productAId=1&productBId=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "deadlock",
+                "bad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 STATE AFTER BAD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/deadlock/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "deadlock",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 GOOD (deterministic lock order - no deadlock)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/deadlock/good?productAId=1&productBId=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "deadlock",
+                "good"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 STATE AFTER GOOD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/labs/deadlock/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "labs",
+                "deadlock",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

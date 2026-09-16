@@ -1,6 +1,16 @@
 # Transaction Propagation
 
-Kod: `com.interviewlab.transaction.propagation.*` — Testler: `PropagationShowcaseTest`, `PropagationSelfInvocationTest`
+Kod: `com.interviewlab.transaction.propagation.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger + DBeaver:**
+```http
+POST /api/labs/propagation/reset
+POST /api/labs/propagation/required
+POST /api/labs/propagation/requires-new/bad
+POST /api/labs/propagation/requires-new/good
+```
+`PropagationShowcaseTest`, `PropagationSelfInvocationTest` — AYNI davranışın otomatik regresyon
+kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

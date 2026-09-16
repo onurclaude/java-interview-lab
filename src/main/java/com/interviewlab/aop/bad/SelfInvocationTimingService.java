@@ -22,9 +22,11 @@ import org.springframework.stereotype.Service;
  * gibi yanlış bir izlenim verir.
  *
  * <p>NASIL REPRODUCE EDİLİR?
- * {@code AopSelfInvocationTest.shouldNotTrackExecutionTimeDuringSelfInvocation()},
- * {@code processOrder()}'ı çağırır ve aspect'in {@code slowStep()} için hiçbir zaman bir
- * süre kaydetmediğini gösterir.
+ * <b>Birincil (interactive):</b> {@code POST /api/labs/aop/self-invocation/bad} - Postman'den
+ * çağır, IntelliJ'de bu sınıfın {@code processOrder()}/{@code slowStep()} metodlarına ve
+ * {@code ExecutionTimeAspect.trackExecutionTime()}'a breakpoint koyup Debug modda dene; üçüncü
+ * breakpoint'in HİÇ tetiklenmediğini gözlemle. Tam adımlar için docs/DEBUGGER_LABS.md.
+ * <b>İkincil (otomatik kanıt):</b> {@code AopSelfInvocationTest.shouldNotTrackExecutionTimeDuringSelfInvocation()}.
  *
  * <p>NASIL DÜZELTİLİR?
  * Zamanlanan metodu farklı bir bean'e taşı ve onu inject edilmiş bir referans üzerinden

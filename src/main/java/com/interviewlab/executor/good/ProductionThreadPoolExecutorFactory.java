@@ -57,6 +57,25 @@ public final class ProductionThreadPoolExecutorFactory {
         return build(corePoolSize, maxPoolSize, queueCapacity, new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
+    /**
+     * DiscardPolicy: reddedilen görevi SESSİZCE atar - ne exception fırlatır ne de çağıranı
+     * çalıştırır. Görevin KAYBOLDUĞUNU gösteren HİÇBİR sinyal yoktur - bu, kabul edilebilir
+     * kayıp toleransı olan (ör. best-effort metrik gönderimi) senaryolar DIŞINDA tehlikelidir.
+     */
+    public static ThreadPoolExecutor discardPolicyExecutor(int corePoolSize, int maxPoolSize, int queueCapacity) {
+        return build(corePoolSize, maxPoolSize, queueCapacity, new ThreadPoolExecutor.DiscardPolicy());
+    }
+
+    /**
+     * DiscardOldestPolicy: yeni görevi kabul etmek İÇİN kuyruktaki EN ESKİ görevi atar (yeni
+     * görev sonra tekrar denenir). "En yeni iş en değerlidir" varsayımının doğru olduğu (ör.
+     * en son fiyat/durum güncellemesi eski olanlardan daha değerlidir) senaryolarda DiscardPolicy'den
+     * daha isabetlidir - ama kuyruktaki EN ESKİ görev de SESSİZCE kaybolur.
+     */
+    public static ThreadPoolExecutor discardOldestPolicyExecutor(int corePoolSize, int maxPoolSize, int queueCapacity) {
+        return build(corePoolSize, maxPoolSize, queueCapacity, new ThreadPoolExecutor.DiscardOldestPolicy());
+    }
+
     private static ThreadPoolExecutor build(int corePoolSize, int maxPoolSize, int queueCapacity, RejectedExecutionHandler handler) {
         AtomicInteger threadNumber = new AtomicInteger(1);
         ThreadFactory namedDaemonFactory = runnable -> {

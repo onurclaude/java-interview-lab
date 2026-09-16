@@ -1,6 +1,18 @@
 # Atomic Primitifler, CAS ve ABA Problemi
 
-Kod: `com.interviewlab.concurrency.atomic.*` — Testler: `VolatileAndAtomicTest`
+Kod: `com.interviewlab.concurrency.atomic.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/concurrency/volatile/misconception-check
+POST /api/labs/concurrency/volatile/correct-usage
+POST /api/labs/concurrency/aba/bad
+POST /api/labs/concurrency/aba/good
+POST /api/labs/concurrency/counter/good
+```
+Tam breakpoint sırası için **`docs/DEBUGGER_LABS.md`** "ABA PROBLEM" ve "volatile" bölümlerine
+bakın. `VolatileAndAtomicTest`, AYNI davranışın otomatik regresyon kanıtıdır — ikincildir,
+birincil değil.
 
 ## `AtomicInteger` neden doğru, `volatile int` neden değil?
 

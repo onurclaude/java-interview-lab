@@ -1,6 +1,18 @@
 # Transaction Isolation Level'ları
 
-Kod: `com.interviewlab.transaction.isolation.*` — Testler: `IsolationLevelsTest`
+Kod: `com.interviewlab.transaction.isolation.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger:**
+```http
+POST /api/labs/isolation/reset
+POST /api/labs/isolation/non-repeatable-read/read-committed
+POST /api/labs/isolation/non-repeatable-read/repeatable-read
+POST /api/labs/isolation/phantom-read/read-committed
+POST /api/labs/isolation/phantom-read/repeatable-read
+POST /api/labs/isolation/dirty-read/read-uncommitted
+```
+Tam breakpoint sırası için **`docs/DEBUGGER_LABS.md`** "ISOLATION" bölümlerine bakın.
+`IsolationLevelsTest`, AYNI davranışın otomatik regresyon kanıtıdır — ikincildir, birincil değil.
 
 # Problem
 

@@ -1,6 +1,16 @@
 # Persistence Context, Dirty Checking ve Flush
 
-Kod: `com.interviewlab.persistence.*` — testler: `PersistenceLifecycleServiceTest`
+Kod: `com.interviewlab.persistence.*`
+
+**Birincil öğrenme arayüzü — Postman + IntelliJ debugger + DBeaver:**
+```http
+POST /api/labs/persistence/reset
+POST /api/labs/persistence/bad
+POST /api/labs/persistence/good
+```
+Tam breakpoint sırası için **`docs/DEBUGGER_LABS.md`** "PERSISTENCE CONTEXT" bölümüne bakın.
+`PersistenceLifecycleServiceTest`, AYNI davranışın otomatik regresyon kanıtıdır — ikincildir,
+birincil değil.
 
 # Problem
 
