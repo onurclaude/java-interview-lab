@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  * UTF-8 olsa BİLE. Bunu düzeltmeden çalıştırmak, Türkçe karakterlerin (ı, ş, ğ, ç, ü, ö)
  * konsolda bozuk (mojibake) görünmesine yol açtı - bunu bizzat çalıştırıp gördük, varsaymadık.
  */
-final class LabRunnerPrint {
+public final class LabRunnerPrint {
 
     static {
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
@@ -22,7 +22,7 @@ final class LabRunnerPrint {
     private LabRunnerPrint() {
     }
 
-    static void banner(String title) {
+    public static void banner(String title) {
         String line = "=".repeat(40);
         System.out.println(line);
         System.out.println("LAB: " + title);
@@ -30,16 +30,16 @@ final class LabRunnerPrint {
         System.out.println();
     }
 
-    static void fact(String label, Object value) {
+    public static void fact(String label, Object value) {
         System.out.printf("%-14s: %s%n", label, value);
     }
 
-    static void section(String header) {
+    public static void section(String header) {
         System.out.println();
         System.out.println(header + ":");
     }
 
-    static void line(String text) {
+    public static void line(String text) {
         System.out.println(text);
     }
 }

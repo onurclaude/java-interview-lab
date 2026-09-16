@@ -147,6 +147,68 @@ ile gösterilmeleri UYGUNDUR, HTTP/Runner'a ZORLANMADI:
 Ayrıntılı denetim geçmişi ve her maddenin ÖNCESİ/SONRASI karşılaştırması için
 `docs/INTERACTIVITY_AUDIT.md`'ye bakın. Devam eden/gelecek çalışma için `NEXT_WORK.md`'ye bakın.
 
+## main() ile ÇALIŞTIRILABİLİR Kategori A konuları (2026-09-16, üçüncü tur)
+
+Kullanıcı, Kategori A (Spring'e bağımlı) konular için de Postman'e hiç gerek kalmadan
+`public static void main(String[] args)` ile Run/Debug edebilmek istedi ("Public static void
+main ile test edemez miyim?"). Bu, `com.interviewlab.labrunner.spring.SpringLabRunnerSupport`
+ile GERÇEKLEŞTİRİLDİ: her runner, `WebApplicationType.SERVLET` + `server.port=0` (rastgele,
+boş port) ile GERÇEK bir Spring context başlatır (gerçek CGLIB proxy'ler, gerçek DB bağlantısı,
+gerçek `request`/`session` web scope registry'si) - bean'lere `ctx.getBean(...)` ile DOĞRUDAN
+Java çağrısıyla erişilir, HTTP/Postman'e HİÇ gerek kalmaz. Security gibi filter-chain'e bağımlı
+konularda ise runner, KENDİ başlattığı rastgele porta `java.net.http.HttpClient` ile GERÇEK
+HTTP isteği gönderir - hâlâ TEK bir `main()` çağrısı içinde, Postman açılmadan.
+
+**22 yeni runner sınıfı, HEPSİ bu oturumda GERÇEKTEN `java -cp` ile çalıştırılıp doğrulandı**
+(bu süreçte 1 gerçek bug bulunup düzeltildi: Pessimistic Locking runner'ında T1'i serbest
+bırakan `CountDownLatch.countDown()` çağrısı yanlış yerdeydi, T2'nin bloke olan çağrısı asla
+bitmiyordu - ayrı bir zamanlayıcı thread'e taşınarak düzeltildi, `t2BlockedForMillis` artık
+GERÇEKTEN ~500ms ölçülüyor).
+
+**POJO grubu** (`com.interviewlab.labrunner.*`, Spring context GEREKMİYOR - bu sınıfların
+KENDİSİ zaten `new` ile kuruluyor, hiçbir @Component/@Service enjeksiyonu yok):
+
+| Runner sınıfı | Kapsadığı Kategori A konuları |
+|---|---|
+| `RaceConditionLabRunner` | Race condition |
+| `LockingPrimitivesLabRunner` | synchronized, ReentrantLock, ReadWriteLock, StampedLock, ABA problem |
+| `VolatileLabRunner` | volatile (misconception + correct usage) |
+| `ThreadLocalLabRunner` | ThreadLocal sızıntısı |
+| `ExecutorLabRunner` | ExecutorService kuyruğu, CallerRuns/Discard/DiscardOldest policy'leri |
+| `CompletableFutureLabRunner` | CompletableFuture (sequential vs parallel) |
+| `CacheAsideLabRunner` | Cache-Aside |
+| `ExceptionsLabRunner` | Exceptions (swallowed/lossy-rethrow/wrapped) |
+| `ResilienceLabRunner` | Retry, Circuit Breaker, Rate Limiter, Bulkhead, Timeout, Fallback |
+| `DesignPatternsBuilderProxyAdapterLabRunner` | Design Pattern: Builder, Proxy, Adapter |
+
+**Spring grubu** (`com.interviewlab.labrunner.spring.*`, GERÇEK Spring context gerekir —
+`docker compose up -d` ÖN KOŞULDUR):
+
+| Runner sınıfı | Kapsadığı Kategori A konuları |
+|---|---|
+| `AopSelfInvocationSpringLabRunner` | Spring AOP self-invocation + proxy introspection |
+| `PersistenceSpringLabRunner` | Persistence context / dirty checking |
+| `TransactionSpringLabRunner` | Transaction rollback |
+| `PropagationSpringLabRunner` | Propagation REQUIRES_NEW self-invocation |
+| `IsolationSpringLabRunner` | Isolation: non-repeatable read, phantom read, dirty read |
+| `OptimisticPessimisticSpringLabRunner` | Optimistic locking, Pessimistic locking |
+| `DeadlockSpringLabRunner` | Deadlock (database-level) |
+| `BeanScopesSpringLabRunner` | Bean scope: singleton, prototype, bean lifecycle |
+| `AsyncSpringLabRunner` | @Async self-invocation |
+| `NPlusOneAndFetchSpringLabRunner` | N+1, Lazy fetch, Eager fetch |
+| `SecuritySpringLabRunner` | Authentication/Authorization (401/403/200) — KENDİ başlattığı porta gerçek HTTP isteği gönderir |
+| `DesignPatternsStrategyFactoryObserverSpringLabRunner` | Design Pattern: Strategy, Factory, Observer |
+
+**main() ile MÜMKÜN OLMAYAN (dürüst, gerekçeli istisna):** Bean scope: Request/Session — bu
+ikisi GERÇEK bir HTTP request'in thread'e bağlı olmasını (`ServletRequestAttributes`) şart
+koşar; `spring-test`'in `MockHttpServletRequest`'i bilinçli olarak sadece test scope'unda,
+production kodda DEĞİL. Bu iki konu için Postman + gerçek Cookie Jar KULLANMAK ZORUNLUDUR -
+bu sahte bir kısıtlama değil, Spring web scope'larının kendi doğasıdır.
+
+**Propagation REQUIRED, Bean scope: Application** de teknik olarak runner'a eklenebilirdi ama
+tek-satırlık/trivial oldukları için (tek transaction'a katılma kontrolü, tek instance ID
+kontrolü) POJO'ya benzer şekilde ayrı bir dosya AÇILMADI - Postman'de zaten DONE'dır.
+
 ## Runtime doğrulama (2026-09-16, ikinci tur — kullanıcının "prove it by executing it" talebi)
 
 Kullanıcı, "43/43 DONE" iddiasını "kod var/test var" temelinde REDDETTİ ve HER Kategori A
