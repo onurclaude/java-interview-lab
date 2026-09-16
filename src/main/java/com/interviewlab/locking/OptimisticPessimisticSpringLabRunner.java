@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner.spring;
+package com.interviewlab.locking;
+
+import com.interviewlab.labrunner.spring.SpringLabRunnerSupport;
 
 import com.interviewlab.labrunner.LabRunnerPrint;
 import com.interviewlab.locking.entity.LockingProductRepository;

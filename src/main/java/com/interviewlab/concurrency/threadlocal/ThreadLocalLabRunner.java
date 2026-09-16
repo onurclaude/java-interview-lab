@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.concurrency.threadlocal;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.concurrency.threadlocal.bad.LeakyCorrelationIdService;
 import com.interviewlab.concurrency.threadlocal.good.CleanCorrelationIdService;

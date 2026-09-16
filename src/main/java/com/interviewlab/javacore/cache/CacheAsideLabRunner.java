@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.javacore.cache;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.javacore.cache.CacheAsideProductService;
 import com.interviewlab.javacore.cache.NoCacheProductService;

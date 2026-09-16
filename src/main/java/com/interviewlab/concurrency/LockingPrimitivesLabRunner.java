@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.concurrency;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.concurrency.atomic.AbaProblemDemo;
 import com.interviewlab.concurrency.race.bad.UnsynchronizedIntCounter;

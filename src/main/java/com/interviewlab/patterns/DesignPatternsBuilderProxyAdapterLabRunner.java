@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.patterns;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.patterns.adapter.ExternalPaymentProviderAdapter;
 import com.interviewlab.patterns.adapter.ExternalPaymentProviderSdk;

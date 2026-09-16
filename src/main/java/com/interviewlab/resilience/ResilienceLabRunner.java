@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.resilience;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.resilience.FlakyExternalService;
 import io.github.resilience4j.bulkhead.Bulkhead;

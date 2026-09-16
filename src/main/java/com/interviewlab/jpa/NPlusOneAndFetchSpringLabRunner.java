@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner.spring;
+package com.interviewlab.jpa;
+
+import com.interviewlab.labrunner.spring.SpringLabRunnerSupport;
 
 import com.interviewlab.common.sql.SqlStatementRecorder;
 import com.interviewlab.jpa.bad.EagerFetchAlwaysLoadsService;

@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.concurrency.volatiletopic;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.concurrency.volatiletopic.bad.VolatileCounter;
 import com.interviewlab.concurrency.volatiletopic.good.ShutdownFlagWorker;

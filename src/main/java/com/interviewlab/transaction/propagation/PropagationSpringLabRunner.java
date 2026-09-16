@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner.spring;
+package com.interviewlab.transaction.propagation;
+
+import com.interviewlab.labrunner.spring.SpringLabRunnerSupport;
 
 import com.interviewlab.labrunner.LabRunnerPrint;
 import com.interviewlab.transaction.entity.Account;

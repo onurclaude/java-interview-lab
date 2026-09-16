@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.exception;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.exception.PaymentGatewayClient;
 import com.interviewlab.exception.bad.LossyRethrowService;

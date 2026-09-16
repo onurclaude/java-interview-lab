@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.executor;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.executor.bad.UnboundedQueueExecutorService;
 import com.interviewlab.executor.good.ProductionThreadPoolExecutorFactory;

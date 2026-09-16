@@ -1,5 +1,43 @@
 # Next Work Checkpoint
 
+## FAZ 8: TAMAMLANDI (2026-09-16) — Runner'lar konunun KENDİ paketine taşındı (discoverability)
+
+Kullanıcı FAZ 7'den sonra "AOP klasörüne bakıyorum, run edebileceğim bir psvm yok" dedi.
+Sebep: runner'lar merkezi `com.interviewlab.labrunner(.spring)` paketindeydi, konunun kendi
+paketinde DEĞİLDİ. Çözüm: **TÜM 22 Kategori-A runner'ı, ilgili konunun kendi paketine
+TAŞINDI** (`git mv` yerine `mv` + `sed` ile paket satırı/import düzeltildi, git rename olarak
+algılandı):
+
+- `com.interviewlab.aop.AopSelfInvocationSpringLabRunner`, `com.interviewlab.persistence.
+  PersistenceSpringLabRunner`, `com.interviewlab.transaction.TransactionSpringLabRunner`,
+  `com.interviewlab.transaction.propagation.PropagationSpringLabRunner`, `com.interviewlab.
+  transaction.isolation.IsolationSpringLabRunner`, `com.interviewlab.locking.
+  OptimisticPessimisticSpringLabRunner`, `com.interviewlab.locking.deadlock.
+  DeadlockSpringLabRunner`, `com.interviewlab.scopes.BeanScopesSpringLabRunner`,
+  `com.interviewlab.async.spring.AsyncSpringLabRunner`, `com.interviewlab.jpa.
+  NPlusOneAndFetchSpringLabRunner`, `com.interviewlab.security.SecuritySpringLabRunner`,
+  `com.interviewlab.patterns.DesignPatternsStrategyFactoryObserverSpringLabRunner` (12 Spring runner)
+- `com.interviewlab.concurrency.race.RaceConditionLabRunner`, `com.interviewlab.concurrency.
+  LockingPrimitivesLabRunner`, `com.interviewlab.concurrency.volatiletopic.VolatileLabRunner`,
+  `com.interviewlab.concurrency.threadlocal.ThreadLocalLabRunner`, `com.interviewlab.executor.
+  ExecutorLabRunner`, `com.interviewlab.async.completablefuture.CompletableFutureLabRunner`,
+  `com.interviewlab.javacore.cache.CacheAsideLabRunner`, `com.interviewlab.exception.
+  ExceptionsLabRunner`, `com.interviewlab.resilience.ResilienceLabRunner`, `com.interviewlab.
+  patterns.DesignPatternsBuilderProxyAdapterLabRunner` (10 POJO runner)
+
+`com.interviewlab.labrunner` paketinde artık SADECE Kategori B'nin 14 saf-Java runner'ı +
+ortak `LabRunnerPrint` var; `com.interviewlab.labrunner.spring` paketinde SADECE ortak
+`SpringLabRunnerSupport` var. **22/22 runner taşıma SONRASI tekrar `java -cp` ile GERÇEKTEN
+çalıştırılıp doğrulandı** (kritik değerler - `interceptionCount`, `t2BlockedForMillis`,
+`failureCount`, 401/403/200 - hepsi taşımadan ÖNCEKİYLE AYNI çıktı). `./mvnw test`: 171/171
+(bir ÖNCEKİ koşuda `VolatileAndAtomicTest.shouldLoseIncrementOperationsWithVolatileCounter`
+GEÇİCİ/flaky olarak başarısız oldu - bilinçli olarak kırılgan bir race-condition testi,
+taşımayla İLGİSİZ, tekrar çalıştırıldığında geçti). `docs/TOPIC_MATRIX.md`'deki runner tablosu
+yeni tam nitelikli paket yollarıyla güncellendi.
+
+**Kullanıcı onayıyla commit+push edildi mi?** Henüz DEĞİL - bu fazın sonunda kullanıcıya
+sorulacak (git safety protokolü gereği, otomatik push YAPILMAZ).
+
 ## FAZ 7: TAMAMLANDI (2026-09-16) — Kategori A için de main() ile Run/Debug
 
 Kullanıcı AOP klasörüne bakarken "run edebileceğim bir komut yok" dedi ve netleştirme

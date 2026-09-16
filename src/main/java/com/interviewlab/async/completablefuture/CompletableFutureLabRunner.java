@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner;
+package com.interviewlab.async.completablefuture;
+
+import com.interviewlab.labrunner.LabRunnerPrint;
 
 import com.interviewlab.async.completablefuture.bad.BlockingGetAggregationService;
 import com.interviewlab.async.completablefuture.good.ComposedAggregationService;

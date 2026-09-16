@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner.spring;
+package com.interviewlab.async.spring;
+
+import com.interviewlab.labrunner.spring.SpringLabRunnerSupport;
 
 import com.interviewlab.async.spring.bad.SelfInvocationNotificationService;
 import com.interviewlab.async.spring.good.NotificationService;

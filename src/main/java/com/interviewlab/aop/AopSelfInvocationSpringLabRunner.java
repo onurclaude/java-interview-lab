@@ -1,4 +1,6 @@
-package com.interviewlab.labrunner.spring;
+package com.interviewlab.aop;
+
+import com.interviewlab.labrunner.spring.SpringLabRunnerSupport;
 
 import com.interviewlab.aop.ExecutionTimeAspect;
 import com.interviewlab.aop.bad.SelfInvocationTimingService;

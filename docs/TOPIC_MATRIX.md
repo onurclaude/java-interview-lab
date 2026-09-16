@@ -165,39 +165,50 @@ bırakan `CountDownLatch.countDown()` çağrısı yanlış yerdeydi, T2'nin blok
 bitmiyordu - ayrı bir zamanlayıcı thread'e taşınarak düzeltildi, `t2BlockedForMillis` artık
 GERÇEKTEN ~500ms ölçülüyor).
 
-**POJO grubu** (`com.interviewlab.labrunner.*`, Spring context GEREKMİYOR - bu sınıfların
-KENDİSİ zaten `new` ile kuruluyor, hiçbir @Component/@Service enjeksiyonu yok):
+**2026-09-16 (dördüncü tur — DİSCOVERABİLİTY düzeltmesi):** Kullanıcı, "AOP klasörüne
+bakıyorum, run edebileceğim bir psvm yok" dedi — runner'lar ayrı, merkezi bir
+`com.interviewlab.labrunner(.spring)` paketindeydi, konunun KENDİ paketinde DEĞİLDİ. TÜM 22
+runner, ilgili konunun KENDİ paketine TAŞINDI (ör. AOP runner'ı artık `com.interviewlab.aop`
+içinde, Persistence runner'ı `com.interviewlab.persistence` içinde) - artık bir konunun
+klasörüne bakınca runner ORADA. Taşıma sonrası HEPSİ TEKRAR çalıştırılıp doğrulandı, `./mvnw
+test` ile regresyon kontrol edildi (171/171). `com.interviewlab.labrunner` paketinde SADECE
+Kategori B'nin 14 saf-Java runner'ı + ortak `LabRunnerPrint` kaldı;
+`com.interviewlab.labrunner.spring` paketinde SADECE ortak `SpringLabRunnerSupport` kaldı.
 
-| Runner sınıfı | Kapsadığı Kategori A konuları |
+**POJO grubu** (Spring context GEREKMİYOR - bu sınıfların KENDİSİ zaten `new` ile kuruluyor,
+hiçbir @Component/@Service enjeksiyonu yok; `com.interviewlab.labrunner.LabRunnerPrint`'i
+import eder):
+
+| Runner sınıfı (tam nitelikli) | Kapsadığı Kategori A konuları |
 |---|---|
-| `RaceConditionLabRunner` | Race condition |
-| `LockingPrimitivesLabRunner` | synchronized, ReentrantLock, ReadWriteLock, StampedLock, ABA problem |
-| `VolatileLabRunner` | volatile (misconception + correct usage) |
-| `ThreadLocalLabRunner` | ThreadLocal sızıntısı |
-| `ExecutorLabRunner` | ExecutorService kuyruğu, CallerRuns/Discard/DiscardOldest policy'leri |
-| `CompletableFutureLabRunner` | CompletableFuture (sequential vs parallel) |
-| `CacheAsideLabRunner` | Cache-Aside |
-| `ExceptionsLabRunner` | Exceptions (swallowed/lossy-rethrow/wrapped) |
-| `ResilienceLabRunner` | Retry, Circuit Breaker, Rate Limiter, Bulkhead, Timeout, Fallback |
-| `DesignPatternsBuilderProxyAdapterLabRunner` | Design Pattern: Builder, Proxy, Adapter |
+| `com.interviewlab.concurrency.race.RaceConditionLabRunner` | Race condition |
+| `com.interviewlab.concurrency.LockingPrimitivesLabRunner` | synchronized, ReentrantLock, ReadWriteLock, StampedLock, ABA problem |
+| `com.interviewlab.concurrency.volatiletopic.VolatileLabRunner` | volatile (misconception + correct usage) |
+| `com.interviewlab.concurrency.threadlocal.ThreadLocalLabRunner` | ThreadLocal sızıntısı |
+| `com.interviewlab.executor.ExecutorLabRunner` | ExecutorService kuyruğu, CallerRuns/Discard/DiscardOldest policy'leri |
+| `com.interviewlab.async.completablefuture.CompletableFutureLabRunner` | CompletableFuture (sequential vs parallel) |
+| `com.interviewlab.javacore.cache.CacheAsideLabRunner` | Cache-Aside |
+| `com.interviewlab.exception.ExceptionsLabRunner` | Exceptions (swallowed/lossy-rethrow/wrapped) |
+| `com.interviewlab.resilience.ResilienceLabRunner` | Retry, Circuit Breaker, Rate Limiter, Bulkhead, Timeout, Fallback |
+| `com.interviewlab.patterns.DesignPatternsBuilderProxyAdapterLabRunner` | Design Pattern: Builder, Proxy, Adapter |
 
-**Spring grubu** (`com.interviewlab.labrunner.spring.*`, GERÇEK Spring context gerekir —
-`docker compose up -d` ÖN KOŞULDUR):
+**Spring grubu** (GERÇEK Spring context gerekir — `docker compose up -d` ÖN KOŞULDUR;
+`com.interviewlab.labrunner.spring.SpringLabRunnerSupport`'u import eder):
 
-| Runner sınıfı | Kapsadığı Kategori A konuları |
+| Runner sınıfı (tam nitelikli) | Kapsadığı Kategori A konuları |
 |---|---|
-| `AopSelfInvocationSpringLabRunner` | Spring AOP self-invocation + proxy introspection |
-| `PersistenceSpringLabRunner` | Persistence context / dirty checking |
-| `TransactionSpringLabRunner` | Transaction rollback |
-| `PropagationSpringLabRunner` | Propagation REQUIRES_NEW self-invocation |
-| `IsolationSpringLabRunner` | Isolation: non-repeatable read, phantom read, dirty read |
-| `OptimisticPessimisticSpringLabRunner` | Optimistic locking, Pessimistic locking |
-| `DeadlockSpringLabRunner` | Deadlock (database-level) |
-| `BeanScopesSpringLabRunner` | Bean scope: singleton, prototype, bean lifecycle |
-| `AsyncSpringLabRunner` | @Async self-invocation |
-| `NPlusOneAndFetchSpringLabRunner` | N+1, Lazy fetch, Eager fetch |
-| `SecuritySpringLabRunner` | Authentication/Authorization (401/403/200) — KENDİ başlattığı porta gerçek HTTP isteği gönderir |
-| `DesignPatternsStrategyFactoryObserverSpringLabRunner` | Design Pattern: Strategy, Factory, Observer |
+| `com.interviewlab.aop.AopSelfInvocationSpringLabRunner` | Spring AOP self-invocation + proxy introspection |
+| `com.interviewlab.persistence.PersistenceSpringLabRunner` | Persistence context / dirty checking |
+| `com.interviewlab.transaction.TransactionSpringLabRunner` | Transaction rollback |
+| `com.interviewlab.transaction.propagation.PropagationSpringLabRunner` | Propagation REQUIRES_NEW self-invocation |
+| `com.interviewlab.transaction.isolation.IsolationSpringLabRunner` | Isolation: non-repeatable read, phantom read, dirty read |
+| `com.interviewlab.locking.OptimisticPessimisticSpringLabRunner` | Optimistic locking, Pessimistic locking |
+| `com.interviewlab.locking.deadlock.DeadlockSpringLabRunner` | Deadlock (database-level) |
+| `com.interviewlab.scopes.BeanScopesSpringLabRunner` | Bean scope: singleton, prototype, bean lifecycle |
+| `com.interviewlab.async.spring.AsyncSpringLabRunner` | @Async self-invocation |
+| `com.interviewlab.jpa.NPlusOneAndFetchSpringLabRunner` | N+1, Lazy fetch, Eager fetch |
+| `com.interviewlab.security.SecuritySpringLabRunner` | Authentication/Authorization (401/403/200) — KENDİ başlattığı porta gerçek HTTP isteği gönderir |
+| `com.interviewlab.patterns.DesignPatternsStrategyFactoryObserverSpringLabRunner` | Design Pattern: Strategy, Factory, Observer |
 
 **main() ile MÜMKÜN OLMAYAN (dürüst, gerekçeli istisna):** Bean scope: Request/Session — bu
 ikisi GERÇEK bir HTTP request'in thread'e bağlı olmasını (`ServletRequestAttributes`) şart
